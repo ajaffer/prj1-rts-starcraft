@@ -2,6 +2,10 @@ package edu.drexel.cs680.prj1.client;
 
 import java.util.HashSet;
 
+import edu.drexel.cs680.prj1.giveorders.GiveOrders;
+import edu.drexel.cs680.prj1.perception.AgentState;
+import edu.drexel.cs680.prj1.perception.Perception;
+import edu.drexel.cs680.prj1.strategy.Strategy;
 import eisbot.proxy.BWAPIEventListener;
 import eisbot.proxy.ExampleAIClient;
 import eisbot.proxy.JNIBWAPI;
@@ -19,14 +23,14 @@ public class AIClient implements BWAPIEventListener {
 	/** used for mineral splits */
 	private HashSet<Integer> claimed = new HashSet<Integer>();
 
-	/** has drone 5 been morphed */
-	private boolean morphedDrone = false;
-	
-	/** has a drone been assigned to building a pool? */
-	private int poolDrone = -1;
-
-	/** when should the next overlord be spawned? */
-	private int supplyCap = 0;
+//	/** has drone 5 been morphed */
+//	private boolean morphedDrone = false;
+//	
+//	/** has a drone been assigned to building a pool? */
+//	private int poolDrone = -1;
+//
+//	/** when should the next overlord be spawned? */
+//	private int supplyCap = 0;
 
 	/**
 	 * Create a Java AI.
@@ -41,6 +45,9 @@ public class AIClient implements BWAPIEventListener {
 	public AIClient() {
 		bwapi = new JNIBWAPI(this);
 		bwapi.start();
+		
+		Strategy.bwapi = bwapi;
+		GiveOrders.bwapi = bwapi;
 	} 
 
 	/**
@@ -63,30 +70,22 @@ public class AIClient implements BWAPIEventListener {
 
 		// reset agent state
 		claimed.clear();
-		morphedDrone = false;
-		poolDrone = -1;
-		supplyCap = 0;
+		AgentState.reset();
 	}
 	
 	/**
 	 * Called each game cycle.
 	 */
 	public void gameUpdate() {
-	
-		// spawn a drone
-		for (Unit unit : bwapi.getMyUnits()) {
-			if (unit.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
-				if (bwapi.getSelf().getMinerals() >= 50 && !morphedDrone) {
-					bwapi.morph(unit.getID(), UnitTypes.Zerg_Drone.ordinal());
-					morphedDrone = true;
-				}
-			}
-		}
-				
+		
+		Perception.collectData();
+		
+		Strategy.makeDecision();
+		
 		// collect minerals
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
-				if (unit.isIdle() && unit.getID() != poolDrone) {
+				if (unit.isIdle() && unit.getID() != AgentState.poolDrone) {
 					
 					for (Unit minerals : bwapi.getNeutralUnits()) {
 						if (minerals.getTypeID() == UnitTypes.Resource_Mineral_Field.ordinal() && !claimed.contains(minerals.getID())) {
@@ -104,10 +103,10 @@ public class AIClient implements BWAPIEventListener {
 		}
 		
 		// build a spawning pool
-		if (bwapi.getSelf().getMinerals() >= 200 && poolDrone < 0) {
+		if (bwapi.getSelf().getMinerals() >= 200 && AgentState.poolDrone < 0) {
 			for (Unit unit : bwapi.getMyUnits()) {
 				if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
-					poolDrone = unit.getID();
+					AgentState.poolDrone = unit.getID();
 					break;
 				}
 			}
@@ -115,18 +114,18 @@ public class AIClient implements BWAPIEventListener {
 			// build the pool under the overlord
 			for (Unit unit : bwapi.getMyUnits()) {
 				if (unit.getTypeID() == UnitTypes.Zerg_Overlord.ordinal()) {
-					bwapi.build(poolDrone, unit.getTileX(), unit.getTileY(), UnitTypes.Zerg_Spawning_Pool.ordinal());
+					bwapi.build(AgentState.poolDrone, unit.getTileX(), unit.getTileY(), UnitTypes.Zerg_Spawning_Pool.ordinal());
 				}				
 			}
 		}
 		
 		// spawn overlords
-		if (bwapi.getSelf().getSupplyUsed() + 2 >= bwapi.getSelf().getSupplyTotal() && bwapi.getSelf().getSupplyTotal() > supplyCap) {			
+		if (bwapi.getSelf().getSupplyUsed() + 2 >= bwapi.getSelf().getSupplyTotal() && bwapi.getSelf().getSupplyTotal() > AgentState.supplyCap) {			
 			if (bwapi.getSelf().getMinerals() >= 100) {
 				for (Unit larva : bwapi.getMyUnits()) {
 					if (larva.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
 						bwapi.morph(larva.getID(), UnitTypes.Zerg_Overlord.ordinal());
-						supplyCap = bwapi.getSelf().getSupplyTotal();
+						AgentState.supplyCap = bwapi.getSelf().getSupplyTotal();
 					}
 				}									
 			}
