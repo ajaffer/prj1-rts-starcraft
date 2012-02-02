@@ -27,4 +27,8 @@ public class PathCoord {
 		
 		heur = new Heuristic(g,h);
 	}
+	public int getHeur()
+	{
+		return heur.f;
+	}
 }
