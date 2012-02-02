@@ -2,12 +2,15 @@ package edu.drexel.cs680.prj1.executeorders;
 
 import java.util.ArrayList;
 
+import eisbot.proxy.JNIBWAPI;
+
 public class PathFinding {
 
-	private ArrayList<PathCoord> goalPath;
+	private ArrayList<Node> goalPath;
 	public boolean pathFound;
 	PathCoord start, goal;
 	public String strAlgName;
+	public JNIBWAPI test;
 	
 	public PathFinding(double xStart, double yStart, double xGoal, double yGoal, String strAlgorithm)
 	{
@@ -24,24 +27,46 @@ public class PathFinding {
 	
 	public void StartAStar()
 	{
-		ArrayList<PathCoord> listOpen = new ArrayList<PathCoord>();
-		ArrayList<PathCoord> listClosed = new ArrayList<PathCoord>();
-		ArrayList<PathCoord> listOK = new ArrayList<PathCoord>();
-		PathCoord dummyPath;
+		ArrayList<Node> listOpen = new ArrayList<Node>();
+		ArrayList<Node> listClosed = new ArrayList<Node>();
+		ArrayList<Node> listOK = new ArrayList<Node>();
+		Node testNode;			
 		
-		listOpen.add(start);
+		// begin the operation
+		int intLowestF=0;
+		Node nStart = new Node(start);
+		listOpen.add(nStart);
+		
 		if(!FoundGoal(start))
-			listClosed.add(start);
+			listClosed.add(nStart);
 		else
 		{
 			pathFound=true;
-			return;
+			listOK.add(nStart);
+			goalPath = listOK;
 		}
 		
-		while(listClosed.size()>0)
+		while(listOpen.size()>0)
 		{
-			
+			intLowestF = GetLowestFNode(listOpen);
+			testNode = listOpen.remove(intLowestF);
+			if(FoundGoal(testNode.self))
+			{
+				listOK=PathToN(testNode);
+				break;
+			}
+			else
+			{
+				listClosed.add(testNode);
+				ArrayList<Node> listChildren;
+				listChildren = GetChildren(testNode, listClosed);
+				for(Node eachNode: listChildren)
+				{
+					listOpen.add(eachNode);
+				}
+			}
 		}
+		goalPath = listOK;
 		
 	}
 	
@@ -56,28 +81,86 @@ public class PathFinding {
 			return false;
 	}
 	
-	public PathCoord GetLowestFCoord(ArrayList<PathCoord> pathList)
+	public int GetLowestFNode(ArrayList<Node> pathList)
 	{
 		int fVal=0;
 		int ptr = 0;
 		
 		if(pathList.size()==1)
-			return pathList.get(0);
+			return 0;
 		else
 		{
-			fVal = pathList.get(0).heur.f;
+			fVal = pathList.get(0).self.getHeur();
 			ptr++;
 			
 			for(int i=1; i<pathList.size();i++)
 			{
-				if(pathList.get(i).heur.f < fVal)
+				if(pathList.get(i).self.getHeur() < fVal)
 				{
 					ptr = i;
-					fVal = pathList.get(i).heur.f;
+					fVal = pathList.get(i).self.getHeur();
 				}
 			}			
-			return pathList.get(ptr);
+			return ptr;
 		}
+	}
+	
+	public ArrayList<Node> PathToN(Node lastNode)
+	{
+		ArrayList<Node> listPath = new ArrayList<Node>();
+		Node parNode;
+		
+		do
+		{
+			listPath.add(lastNode);
+			parNode = lastNode.parent;
+			lastNode = lastNode.parent;
+			
+		}while(parNode!=null);
+		
+		return listPath;
+	}
+	
+	public ArrayList<Node> GetChildren(Node parNode,ArrayList<Node> closedList)
+	{
+		ArrayList<Node> newList = new ArrayList<Node>();
+		Node nodeRight, nodeLeft, nodeUp, nodeDown;
+		
+		PathCoord newPath1 = new PathCoord(parNode.self.x+1,parNode.self.y, start, goal);
+		PathCoord newPath2 = new PathCoord(parNode.self.x,parNode.self.y+1, start, goal);
+		PathCoord newPath3 = new PathCoord(parNode.self.x-1,parNode.self.y, start, goal);
+		PathCoord newPath4 = new PathCoord(parNode.self.x,parNode.self.y-1, start, goal);		
+		
+		if(test.getMap().isWalkable((int)(parNode.self.x+1), (int)(parNode.self.y)))
+		{
+			nodeRight = new Node(newPath1,parNode);
+			nodeRight.self.heur.setG(1);
+			if(!closedList.contains(nodeRight))
+				newList.add(nodeRight);
+		}
+		if(test.getMap().isWalkable((int)(parNode.self.x), (int)(parNode.self.y+1)))
+		{
+			nodeUp = new Node(newPath2,parNode);
+			nodeUp.self.heur.setG(1);
+			if(!closedList.contains(nodeUp))
+				newList.add(nodeUp);
+		}
+		if(test.getMap().isWalkable((int)(parNode.self.x-1), (int)(parNode.self.y)))
+		{
+			nodeLeft = new Node(newPath3,parNode);
+			nodeLeft.self.heur.setG(1);
+			if(!closedList.contains(nodeLeft))
+				newList.add(nodeLeft);
+		}
+		if(test.getMap().isWalkable((int)(parNode.self.x), (int)(parNode.self.y-1)))
+		{
+			nodeDown = new Node(newPath4,parNode);
+			nodeDown.self.heur.setG(1);
+			if(!closedList.contains(nodeDown))
+				newList.add(nodeDown);
+		}
+		
+		return newList;
 	}
 	
 //	public void GetChildren()
