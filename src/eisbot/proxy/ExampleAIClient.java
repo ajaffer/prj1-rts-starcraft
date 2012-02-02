@@ -75,6 +75,7 @@ public class ExampleAIClient implements BWAPIEventListener {
 	 */
 	public void gameUpdate() {
 	
+		System.out.println("hello there!");
 		// spawn a drone
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
