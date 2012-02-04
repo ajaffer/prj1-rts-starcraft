@@ -15,24 +15,24 @@ public class Perception {
 
 	public Map<Integer, Integer> unitsAvailableByType;
 	public Map<Integer, List<Unit>> listOfUnitsIdleByType;
-	public Map<Unit, Integer> commandByUnit;
+	public Map<Unit, Integer> lastCommandByUnit;
 
 	public Perception(JNIBWAPI bwapi) {
 		this.bwapi = bwapi;
 		unitsAvailableByType = new HashMap<Integer, Integer>();
 		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
-		commandByUnit = new HashMap<Unit, Integer>();
+		lastCommandByUnit = new HashMap<Unit, Integer>();
 	}
 
 	public void collectData() {
 		updateAvailableUnitsByType();
 		updateListOfIdleUnitsByType();
-		updateCommandsByUnit();
+		updateLastCommandsByUnit();
 	}
 
-	private void updateCommandsByUnit() {
+	private void updateLastCommandsByUnit() {
 		for (Unit u : bwapi.getMyUnits()) {
-			commandByUnit.put(u, u.getLastCommandID());
+			lastCommandByUnit.put(u, u.getLastCommandID());
 		}
 	}
 
