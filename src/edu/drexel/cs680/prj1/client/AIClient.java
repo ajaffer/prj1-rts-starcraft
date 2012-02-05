@@ -7,7 +7,6 @@ import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
 import edu.drexel.cs680.prj1.strategy.Strategy;
 import eisbot.proxy.BWAPIEventListener;
-import eisbot.proxy.ExampleAIClient;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -45,7 +44,7 @@ public class AIClient implements BWAPIEventListener {
 	 * Create a Java AI.
 	 */
 	public static void main(String[] args) {
-		new ExampleAIClient();
+		new AIClient();
 	}
 
 	/**
@@ -87,11 +86,10 @@ public class AIClient implements BWAPIEventListener {
 	 * Called each game cycle.
 	 */
 	public void gameUpdate() {
-		
 		perception.collectData();
 		
 		strategy.updateState();
-//		s.makeDecision();
+		strategy.makeDecision();
 		
 		giveOrders.sendOrders();
 		
