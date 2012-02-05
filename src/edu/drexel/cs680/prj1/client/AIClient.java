@@ -22,6 +22,9 @@ public class AIClient implements BWAPIEventListener {
 
 	/** used for mineral splits */
 	private HashSet<Integer> claimed = new HashSet<Integer>();
+	
+	/** Perception Module */
+	Perception p;
 
 //	/** has drone 5 been morphed */
 //	private boolean morphedDrone = false;
@@ -46,6 +49,7 @@ public class AIClient implements BWAPIEventListener {
 		bwapi = new JNIBWAPI(this);
 		bwapi.start();
 		
+		p = new Perception(bwapi);
 		Strategy.bwapi = bwapi;
 		GiveOrders.bwapi = bwapi;
 	} 
@@ -78,7 +82,7 @@ public class AIClient implements BWAPIEventListener {
 	 */
 	public void gameUpdate() {
 		
-		Perception.collectData();
+		p.collectData();
 		
 		Strategy.makeDecision();
 		
