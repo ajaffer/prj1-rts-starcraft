@@ -24,7 +24,13 @@ public class AIClient implements BWAPIEventListener {
 	private HashSet<Integer> claimed = new HashSet<Integer>();
 	
 	/** Perception Module */
-	Perception p;
+	Perception perception;
+	
+	/** Strategy Module*/
+	Strategy strategy;
+	
+	/** Give Orders Module*/
+	GiveOrders giveOrders;
 
 //	/** has drone 5 been morphed */
 //	private boolean morphedDrone = false;
@@ -49,9 +55,9 @@ public class AIClient implements BWAPIEventListener {
 		bwapi = new JNIBWAPI(this);
 		bwapi.start();
 		
-		p = new Perception(bwapi);
-		Strategy.bwapi = bwapi;
-		GiveOrders.bwapi = bwapi;
+		perception = new Perception(bwapi);
+		strategy = new Strategy(bwapi);
+		giveOrders = new GiveOrders(bwapi);
 	} 
 
 	/**
@@ -82,9 +88,14 @@ public class AIClient implements BWAPIEventListener {
 	 */
 	public void gameUpdate() {
 		
-		p.collectData();
+		perception.collectData();
 		
-		Strategy.makeDecision();
+		strategy.updateState();
+//		s.makeDecision();
+		
+		giveOrders.sendOrders();
+		
+		
 		
 		// collect minerals
 		for (Unit unit : bwapi.getMyUnits()) {
