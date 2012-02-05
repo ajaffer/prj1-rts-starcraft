@@ -13,21 +13,33 @@ public class Perception {
 
 	public JNIBWAPI bwapi;
 
-	public Map<Integer, Integer> unitsAvailableByType;
+	public Map<Integer, Integer> unitAvailableCountByType;
 	public Map<Integer, List<Unit>> listOfUnitsIdleByType;
 	public Map<Unit, Integer> lastCommandByUnit;
+	public Map<Integer, Integer> enemyUnitCountsByType;
+	
+	public static Perception instance;
 
 	public Perception(JNIBWAPI bwapi) {
+		instance = this;
 		this.bwapi = bwapi;
-		unitsAvailableByType = new HashMap<Integer, Integer>();
+		unitAvailableCountByType = new HashMap<Integer, Integer>();
 		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
 		lastCommandByUnit = new HashMap<Unit, Integer>();
+		enemyUnitCountsByType = new HashMap<Integer, Integer>();
 	}
-
+	
 	public void collectData() {
-		updateAvailableUnitsByType();
+		updateAvailableUnitCountsByType();
+		updateEnemyUnitCountsByType();
 		updateListOfIdleUnitsByType();
 		updateLastCommandsByUnit();
+	}
+
+	private void updateEnemyUnitCountsByType() {
+		for (Unit enemy : bwapi.getEnemyUnits()) {
+			incrementUnitType(enemy.getTypeID(), enemyUnitCountsByType);
+		}
 	}
 
 	private void updateLastCommandsByUnit() {
@@ -53,26 +65,26 @@ public class Perception {
 		availableUnits.add(u);
 	}
 
-	private void updateAvailableUnitsByType() {
+	private void updateAvailableUnitCountsByType() {
 		for (Unit u : bwapi.getMyUnits()) {
-			incrementUnitType(u.getTypeID());
+			incrementUnitType(u.getTypeID(), unitAvailableCountByType);
 		}
 	}
 
-	private void incrementUnitType(int typeID) {
-		Integer count = unitsAvailableByType.get(typeID);
+	private void incrementUnitType(int typeID, Map<Integer,Integer> unitByType) {
+		Integer count = unitByType.get(typeID);
 		if (count == null) {
-			unitsAvailableByType.put(typeID, 1);
+			unitByType.put(typeID, 1);
 		} else {
-			unitsAvailableByType.put(typeID, count + 1);
+			unitByType.put(typeID, count + 1);
 		}
 	}
 
 	public static void main(String[] args) {
 		Perception p = new Perception(null);
-		p.unitsAvailableByType.put(UnitTypes.Zerg_Drone.ordinal(), 2);
+		p.unitAvailableCountByType.put(UnitTypes.Zerg_Drone.ordinal(), 2);
 		System.out
-				.println(p.unitsAvailableByType.get(UnitTypes.Zerg_Drone.ordinal()));
+				.println(p.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()));
 	}
 
 }

@@ -7,7 +7,6 @@ import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
 import edu.drexel.cs680.prj1.strategy.Strategy;
 import eisbot.proxy.BWAPIEventListener;
-import eisbot.proxy.ExampleAIClient;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -24,7 +23,13 @@ public class AIClient implements BWAPIEventListener {
 	private HashSet<Integer> claimed = new HashSet<Integer>();
 	
 	/** Perception Module */
-	Perception p;
+	Perception perception;
+	
+	/** Strategy Module*/
+	Strategy strategy;
+	
+	/** Give Orders Module*/
+	GiveOrders giveOrders;
 
 //	/** has drone 5 been morphed */
 //	private boolean morphedDrone = false;
@@ -39,7 +44,7 @@ public class AIClient implements BWAPIEventListener {
 	 * Create a Java AI.
 	 */
 	public static void main(String[] args) {
-		new ExampleAIClient();
+		new AIClient();
 	}
 
 	/**
@@ -49,9 +54,9 @@ public class AIClient implements BWAPIEventListener {
 		bwapi = new JNIBWAPI(this);
 		bwapi.start();
 		
-		p = new Perception(bwapi);
-		Strategy.bwapi = bwapi;
-		GiveOrders.bwapi = bwapi;
+		perception = new Perception(bwapi);
+		strategy = new Strategy(bwapi);
+		giveOrders = new GiveOrders(bwapi);
 	} 
 
 	/**
@@ -81,10 +86,14 @@ public class AIClient implements BWAPIEventListener {
 	 * Called each game cycle.
 	 */
 	public void gameUpdate() {
+		perception.collectData();
 		
-		p.collectData();
+		strategy.updateState();
+		strategy.makeDecision();
 		
-		Strategy.makeDecision();
+		giveOrders.sendOrders();
+		
+		
 		
 		// collect minerals
 		for (Unit unit : bwapi.getMyUnits()) {
