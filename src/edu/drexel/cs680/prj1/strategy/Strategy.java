@@ -40,17 +40,11 @@ public class Strategy {
 		if (lowEnemyCount() && enoughBuildingsAvailable()) {
 			currentState = States.Explore;
 		}  
-<<<<<<< HEAD
+
 		else if (enoughAttackersAvailable()) {
 			currentState = States.Attack;
 		} 
 		else if (enemyNearby()) {
-=======
-		if (enoughAttackersAvailable() && enemyNearby()) {
-			currentState = States.Attack;
-		} 
-		if (!enoughAttackersAvailable() && enemyNearby()) {
->>>>>>> 13013d473263f2ca66260fbd5ef9256cfd19bb80
 			currentState = States.Defend;
 		}
 		else
