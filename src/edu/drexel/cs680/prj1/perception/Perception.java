@@ -47,6 +47,7 @@ public class Perception {
 		updateListOfIdleUnitsByType();
 		updateListOfEnemyUnitsByType();
 		updateLastCommandsByUnit();
+		updateEnemyUnitCount();
 	}
 
 	private void updateEnemyUnitCount()

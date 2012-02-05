@@ -30,6 +30,7 @@ public class Strategy {
 		instance = this;
 		this.bwapi = bwapi;
 		this.currentState = States.Build;
+		updateState();
 	}
 	
 	
@@ -37,10 +38,11 @@ public class Strategy {
 	public void updateState() {
 		//currentState = States.Build;  States.Build means low enemy count
 
-		if (lowEnemyCount() && enoughBuildingsAvailable()) {
+		if (!enoughBuildingsAvailable())
+			currentState = States.Build;
+		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
 			currentState = States.Explore;
 		}  
-
 		else if (enoughAttackersAvailable()) {
 			currentState = States.Attack;
 		} 
@@ -71,9 +73,16 @@ public class Strategy {
 		/**
 		 * TODO Please use an appropriate Zerg Building type, I just Chose
 		 * Hatchery, is that a good choice?
+		 * possibly lairs, they have different capabilities
 		 */
-		return Perception.instance.unitAvailableCountByType
-				.get(UnitTypes.Zerg_Hatchery.ordinal()) > MIN_HATCHERIES;
+		int hatcheries, lairs = 0;
+		
+		hatcheries = Perception.instance.unitAvailableCountByType
+				.get(UnitTypes.Zerg_Hatchery.ordinal());
+		if (hatcheries > MIN_HATCHERIES)
+			return true;
+		else
+			return false;
 	}
 
 	private boolean lowEnemyCount() {
