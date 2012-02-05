@@ -18,6 +18,10 @@ public class Perception {
 	public Map<Unit, Integer> lastCommandByUnit;
 	public Map<Integer, Integer> enemyUnitCountsByType;
 	
+	// used in Strategy
+	public int totalEnemyUnits;
+	public int totalMilitary;
+	
 	public static Perception instance;
 
 	public Perception(JNIBWAPI bwapi) {
@@ -27,6 +31,7 @@ public class Perception {
 		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
 		lastCommandByUnit = new HashMap<Unit, Integer>();
 		enemyUnitCountsByType = new HashMap<Integer, Integer>();
+		updateEnemyUnitCount();
 	}
 	
 	public void collectData() {
@@ -36,6 +41,19 @@ public class Perception {
 		updateLastCommandsByUnit();
 	}
 
+	private void updateEnemyUnitCount()
+	{
+		int count = 0;
+		for(Unit eachUnit: bwapi.getEnemyUnits())
+		{
+			if(eachUnit.isVisible())
+				count++;
+		}
+		
+		totalEnemyUnits = count;
+	}
+	
+		
 	private void updateEnemyUnitCountsByType() {
 		for (Unit enemy : bwapi.getEnemyUnits()) {
 			incrementUnitType(enemy.getTypeID(), enemyUnitCountsByType);

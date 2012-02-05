@@ -14,7 +14,7 @@ public class Strategy {
 
 	public States currentState;
 
-	private static final int ENEMY_UNIS_SAFE_COUNT = 10;
+	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
 	private JNIBWAPI bwapi;
@@ -32,27 +32,36 @@ public class Strategy {
 		this.currentState = States.Build;
 	}
 	
+	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
-		currentState = States.Build;
+		//currentState = States.Build;  States.Build means low enemy count
 
 		if (lowEnemyCount() && enoughBuildingsAvailable()) {
 			currentState = States.Explore;
 		}  
-		if (enoughAttackersAvailable()) {
+		else if (enoughAttackersAvailable()) {
 			currentState = States.Attack;
 		} 
-		if (enemyNearby()) {
+		else if (enemyNearby()) {
 			currentState = States.Defend;
 		}
+		else
+			currentState = States.Build;
 	}
 
 	private boolean enemyNearby() {
 		// TODO Auto-generated method stub
-		return false;
+		
+		// if the enemy appears in the window, then...
+		// this is assumed with the number of VISIBLE units
+		if(Perception.instance.totalEnemyUnits>0)
+			return true;
+		else
+			return false;
 	}
 
-	private boolean enoughAttackersAvailable() {
+	private boolean enoughAttackersAvailable() {		
 		return Perception.instance.listOfUnitsIdleByType.get(
 				UnitTypes.Zerg_Drone).size() > MIN_DRONES;
 	}
@@ -67,7 +76,7 @@ public class Strategy {
 	}
 
 	private boolean lowEnemyCount() {
-		return Perception.instance.enemyUnitCountsByType.size() < ENEMY_UNIS_SAFE_COUNT;
+		return Perception.instance.enemyUnitCountsByType.size() < ENEMY_UNIT_SAFE_COUNT;
 	}
 
 	//TODO Remove this
