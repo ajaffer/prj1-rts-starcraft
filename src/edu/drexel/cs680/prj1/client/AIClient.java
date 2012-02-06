@@ -58,10 +58,10 @@ public class AIClient implements BWAPIEventListener {
 		bwapi = new JNIBWAPI(this);
 		bwapi.start();
 		
-		perception = new Perception(bwapi);
-		strategy = new Strategy(bwapi);
-		giveOrders = new GiveOrders(bwapi);
-		pathFinding = new PathFinding(bwapi);
+		//perception = new Perception(bwapi);	// moved to gameStarted section
+		//strategy = new Strategy(bwapi);			// moved to gameStarted section
+		//giveOrders = new GiveOrders(bwapi);		// moved to gameStarted section
+		//pathFinding = new PathFinding(bwapi);	// moved to gameStarted section
 	} 
 
 	/**
@@ -85,12 +85,20 @@ public class AIClient implements BWAPIEventListener {
 		// reset agent state
 		claimed.clear();
 		AgentState.reset();
+		
+		perception = new Perception(bwapi);
+		strategy = new Strategy(bwapi);
+		giveOrders = new GiveOrders(bwapi);
+		pathFinding = new PathFinding(bwapi);
 	}
 	
 	/**
 	 * Called each game cycle.
 	 */
 	public void gameUpdate() {
+		//System.out.println("Cycling ");
+		//Perception newPerception = new Perception(bwapi);
+		//newPerception.collectData();
 		perception.collectData();
 		
 		strategy.updateState();
@@ -99,7 +107,7 @@ public class AIClient implements BWAPIEventListener {
 		giveOrders.sendOrders();
 		
 		
-		
+/*		
 		// collect minerals
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
@@ -170,6 +178,7 @@ public class AIClient implements BWAPIEventListener {
 				}
 			}
 		}
+		*/
 	}
 
 	public void gameEnded() {}

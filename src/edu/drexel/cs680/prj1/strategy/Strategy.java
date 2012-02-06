@@ -14,7 +14,7 @@ public class Strategy {
 
 	public States currentState;
 
-	private static final int ENEMY_UNIS_SAFE_COUNT = 10;
+	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
 	private JNIBWAPI bwapi;
@@ -29,30 +29,52 @@ public class Strategy {
 	public Strategy(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
-		this.currentState = States.Build;
+		this.currentState = States.Build;		
 	}
+	
 	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
-		currentState = States.Build;
+		//currentState = States.Build;  States.Build means low enemy count		
 
-		if (lowEnemyCount() && enoughBuildingsAvailable()) {
+		if(enemyNearby())
+			System.out.println("Yo! look out!");
+		
+		if (!enoughBuildingsAvailable())
+			currentState = States.Build;
+		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
 			currentState = States.Explore;
 		}  
-		if (enoughAttackersAvailable() && enemyNearby()) {
+		else if (enoughAttackersAvailable()) {
 			currentState = States.Attack;
 		} 
-		if (!enoughAttackersAvailable() && enemyNearby()) {
+		else if (enemyNearby()) {
 			currentState = States.Defend;
 		}
+		else
+			currentState = States.Build;	
+		
 	}
 
 	private boolean enemyNearby() {
 		// TODO Auto-generated method stub
-		return false;
+		
+		// if the enemy appears in the window, then...
+		// this is assumed with the number of VISIBLE units
+		System.out.println("checking if enemy nearby");
+		int count = 0;		
+		count = Perception.instance.totalEnemyUnits;
+		if(count>0)
+		{
+			// TODO - testing
+			System.out.println("Enemy in sight!  This is how many: " + count);
+			return true;
+		}
+		else
+			return false;
 	}
 
-	private boolean enoughAttackersAvailable() {
+	private boolean enoughAttackersAvailable() {		
 		return Perception.instance.listOfUnitsIdleByType.get(
 				UnitTypes.Zerg_Drone).size() > MIN_DRONES;
 	}
@@ -61,13 +83,20 @@ public class Strategy {
 		/**
 		 * TODO Please use an appropriate Zerg Building type, I just Chose
 		 * Hatchery, is that a good choice?
+		 * possibly lairs, they have different capabilities
 		 */
-		return Perception.instance.unitAvailableCountByType
-				.get(UnitTypes.Zerg_Hatchery.ordinal()) > MIN_HATCHERIES;
+		int hatcheries, lairs = 0;
+		
+		hatcheries = Perception.instance.unitAvailableCountByType
+				.get(UnitTypes.Zerg_Hatchery.ordinal());
+		if (hatcheries > MIN_HATCHERIES)
+			return true;
+		else
+			return false;
 	}
 
 	private boolean lowEnemyCount() {
-		return Perception.instance.enemyUnitCountsByType.size() < ENEMY_UNIS_SAFE_COUNT;
+		return Perception.instance.enemyUnitCountsByType.size() < ENEMY_UNIT_SAFE_COUNT;
 	}
 
 	//TODO Remove this
