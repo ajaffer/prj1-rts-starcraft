@@ -58,8 +58,14 @@ public class Strategy {
 		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
-		if(Perception.instance.totalEnemyUnits>0)
+		int count = 0;
+		count = Perception.instance.totalEnemyUnits;
+		if(count>0)
+		{
+			// TODO - testing
+			System.out.println("Enemy in sight!  This is how many: " + count);
 			return true;
+		}
 		else
 			return false;
 	}
