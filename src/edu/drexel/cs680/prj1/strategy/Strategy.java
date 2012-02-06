@@ -37,12 +37,10 @@ public class Strategy {
 	public void updateState() {
 		//currentState = States.Build;  States.Build means low enemy count		
 
-		if(enemyNearby())
-			System.out.println("Yo! look out!");
-		
-		if (!enoughBuildingsAvailable())
+				
+		if (!enoughBuildingsAvailable() || !enoughBuildingsAvailable())
 			currentState = States.Build;
-		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
+		else if (lowEnemyCount()) {
 			currentState = States.Explore;
 		}  
 		else if (enoughAttackersAvailable()) {
@@ -74,9 +72,14 @@ public class Strategy {
 			return false;
 	}
 
-	private boolean enoughAttackersAvailable() {		
-		return Perception.instance.listOfUnitsIdleByType.get(
-				UnitTypes.Zerg_Drone).size() > MIN_DRONES;
+	private boolean enoughAttackersAvailable() {	
+		int drones;
+		drones = Perception.instance.listOfUnitsIdleByType.get(
+				UnitTypes.Zerg_Drone).size();
+		if(drones  > MIN_DRONES)
+			return true;
+		else
+			return false;
 	}
 
 	private boolean enoughBuildingsAvailable() {
@@ -85,7 +88,7 @@ public class Strategy {
 		 * Hatchery, is that a good choice?
 		 * possibly lairs, they have different capabilities
 		 */
-		int hatcheries, lairs = 0;
+		int hatcheries, drones = 0;
 		
 		hatcheries = Perception.instance.unitAvailableCountByType
 				.get(UnitTypes.Zerg_Hatchery.ordinal());

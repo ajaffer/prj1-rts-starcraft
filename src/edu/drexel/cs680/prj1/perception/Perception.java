@@ -25,7 +25,7 @@ public class Perception {
 	public int totalEnemyUnits;
 	public int totalMilitary;
 	public int totalMinerals;
-	public int armyBuild;
+	public int armyDrone;
 	public int armyAttack;
 	
 	public static Perception instance;
@@ -41,7 +41,7 @@ public class Perception {
 		lastCommandByUnit = new HashMap<Unit, Integer>();
 		
 		totalMinerals = 0;
-		armyBuild = 0;
+		armyDrone = 0;		// drone army is 5 Zerg Drones for gathering
 		armyAttack = 0;
 		
 
@@ -63,7 +63,7 @@ public class Perception {
 
 	private void updateAvailableMinerals()
 	{
-		
+		totalMinerals = bwapi.getSelf().getCumulativeMinerals();
 	}
 	
 	private void updateEnemyUnitCount()

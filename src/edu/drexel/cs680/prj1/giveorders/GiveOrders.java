@@ -45,7 +45,9 @@ public class GiveOrders {
 
 	private void build() {
 		// TODO Auto-generated method stub
-
+		
+		System.out.println("I have " + Perception.instance.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()) + " Drones available");
+		System.out.println("I have " + Perception.instance.unitAvailableCountByType.get(UnitTypes.Zerg_Hatchery.ordinal()) + " Hatcheries available");
 	}
 
 	private void defend() {
