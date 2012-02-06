@@ -29,15 +29,15 @@ public class Strategy {
 	public Strategy(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
-		this.currentState = States.Build;
-		updateState();
+		this.currentState = States.Build;		
 	}
 	
 	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
 		//currentState = States.Build;  States.Build means low enemy count
-
+		System.out.println("updating state");
+				
 		if (!enoughBuildingsAvailable())
 			currentState = States.Build;
 		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
@@ -51,6 +51,8 @@ public class Strategy {
 		}
 		else
 			currentState = States.Build;
+		
+		System.out.println(currentState.toString());
 	}
 
 	private boolean enemyNearby() {

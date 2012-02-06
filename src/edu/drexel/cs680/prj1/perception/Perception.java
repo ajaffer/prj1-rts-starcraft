@@ -30,6 +30,7 @@ public class Perception {
 	public Perception(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
+		
 		unitAvailableCountByType = new HashMap<Integer, Integer>();
 		enemyUnitCountsByType = new HashMap<Integer, Integer>();
 		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
@@ -37,11 +38,12 @@ public class Perception {
 		lastCommandByUnit = new HashMap<Unit, Integer>();
 
 		enemyUnitCountsByType = new HashMap<Integer, Integer>();
-		updateEnemyUnitCount();
+		//updateEnemyUnitCount();
 
 	}
 	
 	public void collectData() {
+	
 		updateAvailableUnitCountsByType();
 		updateEnemyUnitCountsByType();
 		updateListOfIdleUnitsByType();
