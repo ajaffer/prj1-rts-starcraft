@@ -17,8 +17,8 @@ public class Strategy {
 	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
-	private static final int MIN_SPAWINING_POOL = 1;
-	
+	private static final int MIN_SPAWNING_POOL = 1;
+		
 	private JNIBWAPI bwapi;
 
 	/** FSM States */
@@ -31,7 +31,8 @@ public class Strategy {
 	public Strategy(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
-		this.currentState = States.Build;		
+		//this.currentState = States.Build;
+		this.currentState = States.Defend;
 	}
 	
 	
@@ -50,27 +51,35 @@ public class Strategy {
 		 *  
 		 *  If attacked then defend/rebuild/repair
 		 */
+		System.out.println("checking! current state is " + currentState.toString());
 		
 		States lastState = currentState;		
 		
 		if (enemyNearby()) {
 			currentState = States.Defend;
 		}
-		else if (!enoughBuildingsAvailable() || !enoughBuildingsAvailable() || !enoughResourcesAvailable())
+		
+		if (!enoughBuildingsAvailable() || !enoughBuildingsAvailable() || !enoughResourcesAvailable())
 		{
 			currentState = States.Build;			
 		}
-		else if (enoughAttackersAvailable()) {
+		
+		if (enoughAttackersAvailable()) 
+		{
 			currentState = States.Attack;
 		}
-		else if (lowEnemyCount()) {			
+		
+		if (lowEnemyCount()) 
+		{			
 			currentState = States.Explore;			
 		}  		 		
-		else
-			currentState = States.Build;	
+		//else
+		//	currentState = States.Build;	
 			
 		if(!lastState.equals(currentState))
 			System.out.println("State changed to: " + currentState.toString());
+		
+	
 	}
 	
 	private boolean enoughResourcesAvailable()
@@ -119,14 +128,15 @@ public class Strategy {
 		 * Hatchery, is that a good choice?
 		 * possibly lairs, they have different capabilities
 		 */
-		int hatcheries, drones = 0;
-		
+		int hatcheries, drones, spawnpool = 0;
+		spawnpool = Perception.instance.unitAvailableCountByType
+				.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
 		hatcheries = Perception.instance.unitAvailableCountByType
 				.get(UnitTypes.Zerg_Hatchery.ordinal());
-		if (hatcheries > MIN_HATCHERIES)
-			return true;
-		else
+		if ((hatcheries < MIN_HATCHERIES) || (spawnpool < MIN_SPAWNING_POOL))
 			return false;
+		else
+			return true;
 	}
 
 	private boolean lowEnemyCount() {

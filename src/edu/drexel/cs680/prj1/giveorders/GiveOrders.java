@@ -44,12 +44,43 @@ public class GiveOrders {
 		// TODO Auto-generated method stub
 
 	}
+	
+	private void gatherMinerals()
+	{
+		// TODO make a Zerg Drone gather minerals.  Use half of what's idle
+		System.out.println("Gathering minerals...");
+	}
+	
+	private void gatherGas()
+	{
+		// TODO make a Zerg Drone gather minerals.  Use half of what's idle
+		System.out.println("Gathering gas...");
+	}
+	
+	private void buildExtractor()
+	{
+		// TODO make a Zerg Drone create an extractor.  Needs to find a gas source, though
+		System.out.println("Attempting to create extractor...");
+	}
 
 	private void build() {
 		// TODO Auto-generated method stub
 		
-		System.out.println("I have " + Perception.instance.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()) + " Drones available");
-		System.out.println("I have " + Perception.instance.unitAvailableCountByType.get(UnitTypes.Zerg_Hatchery.ordinal()) + " Hatcheries available");
+		/**
+		 * This is the build state, the AI is in this state because of the following
+		 * factors that may not be present
+		 */
+		
+		// check if there are enough resources
+		if(Perception.instance.totalMinerals < 100)			// this is from the Strategy "enoughResourcesAvailable" method
+			gatherMinerals();
+
+		if(Perception.instance.buildingExtractor < 1)
+			buildExtractor();
+		
+		if(Perception.instance.totalGas< 100)
+			gatherGas();
+		
 	}
 
 	private void defend() {

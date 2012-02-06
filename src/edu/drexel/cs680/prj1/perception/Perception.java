@@ -25,9 +25,11 @@ public class Perception {
 	public int totalEnemyUnits;
 	public int totalMilitary;
 	public int totalMinerals;
+	public int totalExtractors;
 	public int totalGas;
 	public int armyDrone;
 	public int armyZergling;
+	public int buildingExtractor;
 	
 	
 	public static Perception instance;
@@ -43,8 +45,11 @@ public class Perception {
 		lastCommandByUnit = new HashMap<Unit, Integer>();
 		
 		totalMinerals = 0;
+		totalGas = 0;
+		totalExtractors = 0;
 		armyDrone = 0;		// drone army is 5 Zerg Drones for gathering		
 		armyZergling = 0;   // Zergling army is 20 Zerglings for attacking
+		buildingExtractor = 0;
 		
 
 		enemyUnitCountsByType = new HashMap<Integer, Integer>();
