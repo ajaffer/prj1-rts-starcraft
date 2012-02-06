@@ -24,6 +24,9 @@ public class Perception {
 	// used in Strategy
 	public int totalEnemyUnits;
 	public int totalMilitary;
+	public int totalMinerals;
+	public int armyBuild;
+	public int armyAttack;
 	
 	public static Perception instance;
 
@@ -36,6 +39,11 @@ public class Perception {
 		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
 		listOfEnemyUnitsByType = new HashMap<Integer, List<Unit>>();
 		lastCommandByUnit = new HashMap<Unit, Integer>();
+		
+		totalMinerals = 0;
+		armyBuild = 0;
+		armyAttack = 0;
+		
 
 		enemyUnitCountsByType = new HashMap<Integer, Integer>();
 		//updateEnemyUnitCount();
@@ -44,6 +52,7 @@ public class Perception {
 	
 	public void collectData() {
 	
+		updateAvailableMinerals();
 		updateAvailableUnitCountsByType();
 		updateEnemyUnitCountsByType();
 		updateListOfIdleUnitsByType();
@@ -52,6 +61,11 @@ public class Perception {
 		updateEnemyUnitCount();
 	}
 
+	private void updateAvailableMinerals()
+	{
+		
+	}
+	
 	private void updateEnemyUnitCount()
 	{
 		int count = 0;
@@ -130,8 +144,7 @@ public class Perception {
 	public static void main(String[] args) {
 		Perception p = new Perception(null);
 		p.unitAvailableCountByType.put(UnitTypes.Zerg_Drone.ordinal(), 2);
-		System.out
-				.println(p.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()));
+		System.out.println(p.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()));
 	}
 
 }

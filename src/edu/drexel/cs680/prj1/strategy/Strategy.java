@@ -35,9 +35,11 @@ public class Strategy {
 	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
-		//currentState = States.Build;  States.Build means low enemy count
-		System.out.println("updating state");
-				
+		//currentState = States.Build;  States.Build means low enemy count		
+
+		if(enemyNearby())
+			System.out.println("Yo! look out!");
+		
 		if (!enoughBuildingsAvailable())
 			currentState = States.Build;
 		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
@@ -50,9 +52,8 @@ public class Strategy {
 			currentState = States.Defend;
 		}
 		else
-			currentState = States.Build;
+			currentState = States.Build;	
 		
-		System.out.println(currentState.toString());
 	}
 
 	private boolean enemyNearby() {
@@ -60,7 +61,8 @@ public class Strategy {
 		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
-		int count = 0;
+		System.out.println("checking if enemy nearby");
+		int count = 0;		
 		count = Perception.instance.totalEnemyUnits;
 		if(count>0)
 		{
