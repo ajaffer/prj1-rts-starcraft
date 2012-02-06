@@ -17,6 +17,8 @@ public class Strategy {
 	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
+	private static final int MIN_SPAWINING_POOL = 1;
+	
 	private JNIBWAPI bwapi;
 
 	/** FSM States */
@@ -35,23 +37,52 @@ public class Strategy {
 	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
-		//currentState = States.Build;  States.Build means low enemy count		
-
-				
-		if (!enoughBuildingsAvailable() || !enoughBuildingsAvailable())
-			currentState = States.Build;
-		else if (lowEnemyCount()) {
-			currentState = States.Explore;
-		}  
-		else if (enoughAttackersAvailable()) {
-			currentState = States.Attack;
-		} 
-		else if (enemyNearby()) {
+		//currentState = States.Build;  States.Build means low enemy count
+		
+		/**
+		 *  Basic strategy:
+		 *  
+		 *  While not being attacked:
+		 *  	Try to Build,
+		 *  	Then Explore
+		 *  		Then Attack
+		 *  	otherwise just build
+		 *  
+		 *  If attacked then defend/rebuild/repair
+		 */
+		
+		States lastState = currentState;		
+		
+		if (enemyNearby()) {
 			currentState = States.Defend;
 		}
+		else if (!enoughBuildingsAvailable() || !enoughBuildingsAvailable() || !enoughResourcesAvailable())
+		{
+			currentState = States.Build;			
+		}
+		else if (enoughAttackersAvailable()) {
+			currentState = States.Attack;
+		}
+		else if (lowEnemyCount()) {			
+			currentState = States.Explore;			
+		}  		 		
 		else
 			currentState = States.Build;	
+			
+		if(!lastState.equals(currentState))
+			System.out.println("State changed to: " + currentState.toString());
+	}
+	
+	private boolean enoughResourcesAvailable()
+	{
+		int Minerals, Gas = 0;
+		Minerals = Perception.instance.totalMinerals;
+		Gas = Perception.instance.totalGas;
 		
+		if(Minerals<100 || Gas < 100)
+			return false;
+		else
+			return true;
 	}
 
 	private boolean enemyNearby() {
@@ -59,7 +90,7 @@ public class Strategy {
 		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
-		System.out.println("checking if enemy nearby");
+		
 		int count = 0;		
 		count = Perception.instance.totalEnemyUnits;
 		if(count>0)

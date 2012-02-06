@@ -19,6 +19,8 @@ public class GiveOrders {
 		instance = this;
 		this.bwapi = bwapi;
 	}
+	
+	
 
 	// TODO remove this
 	public static void morphDrone(int id, int ordinal) {
