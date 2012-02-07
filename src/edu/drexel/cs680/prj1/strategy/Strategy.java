@@ -31,8 +31,8 @@ public class Strategy {
 	public Strategy(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
-		//this.currentState = States.Build;
-		this.currentState = States.Defend;
+		this.currentState = States.Build;
+		//this.currentState = States.Defend;
 	}
 	
 	
@@ -55,35 +55,37 @@ public class Strategy {
 		
 		States lastState = currentState;		
 		
-		if (enemyNearby()) {
+		if(enemyNearby()==true){
 			currentState = States.Defend;
-		}
-		
-		if (!enoughBuildingsAvailable() || !enoughBuildingsAvailable() || !enoughResourcesAvailable())
+		}else
 		{
-			currentState = States.Build;			
+			if ((!enoughBuildingsAvailable()) || (!enoughResourcesAvailable()))
+			{
+				currentState = States.Build;			
+			}
+			else if (enoughAttackersAvailable()) 
+			{
+				currentState = States.Attack;
+			}
+			else if (lowEnemyCount()) 
+			{			
+				currentState = States.Explore;			
+			}  		 		
+			else
+				currentState = States.Build;	
 		}
 		
-		if (enoughAttackersAvailable()) 
-		{
-			currentState = States.Attack;
-		}
 		
-		if (lowEnemyCount()) 
-		{			
-			currentState = States.Explore;			
-		}  		 		
-		//else
-		//	currentState = States.Build;	
-			
 		if(!lastState.equals(currentState))
 			System.out.println("State changed to: " + currentState.toString());
+
 		
 	
 	}
 	
 	private boolean enoughResourcesAvailable()
 	{
+		System.out.println("checking enough resources!: " + currentState.toString());
 		int Minerals, Gas = 0;
 		Minerals = Perception.instance.totalMinerals;
 		Gas = Perception.instance.totalGas;
@@ -99,9 +101,11 @@ public class Strategy {
 		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
+
 		
 		int count = 0;		
 		count = Perception.instance.totalEnemyUnits;
+		System.out.println("checking enemies!: " + count);
 		if(count>0)
 		{
 			// TODO - testing
@@ -116,7 +120,7 @@ public class Strategy {
 		int drones;
 		drones = Perception.instance.listOfUnitsIdleByType.get(
 				UnitTypes.Zerg_Drone).size();
-		if(drones  > MIN_DRONES)
+		if(drones  > MIN_DRONES)			
 			return true;
 		else
 			return false;
@@ -129,10 +133,13 @@ public class Strategy {
 		 * possibly lairs, they have different capabilities
 		 */
 		int hatcheries, drones, spawnpool = 0;
-		spawnpool = Perception.instance.unitAvailableCountByType
-				.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
+//		spawnpool = Perception.instance.unitAvailableCountByType
+//				.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
 		hatcheries = Perception.instance.unitAvailableCountByType
 				.get(UnitTypes.Zerg_Hatchery.ordinal());
+		
+		System.out.println("checking enough Buildings");
+		
 		if ((hatcheries < MIN_HATCHERIES) || (spawnpool < MIN_SPAWNING_POOL))
 			return false;
 		else
