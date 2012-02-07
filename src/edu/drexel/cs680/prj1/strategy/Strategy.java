@@ -133,6 +133,7 @@ public class Strategy {
 		 * possibly lairs, they have different capabilities
 		 */
 		int hatcheries, drones, spawnpool = 0;
+		// this causes a bug, do we need a spawning pool?
 //		spawnpool = Perception.instance.unitAvailableCountByType
 //				.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
 		hatcheries = Perception.instance.unitAvailableCountByType
