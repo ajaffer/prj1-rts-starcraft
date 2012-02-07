@@ -17,6 +17,8 @@ public class Strategy {
 	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
+	private static final int MIN_SPAWNING_POOL = 1;
+		
 	private JNIBWAPI bwapi;
 
 	/** FSM States */
@@ -29,31 +31,69 @@ public class Strategy {
 	public Strategy(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
-		this.currentState = States.Build;		
+		this.currentState = States.Build;
+		//this.currentState = States.Defend;
 	}
 	
 	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
-		//currentState = States.Build;  States.Build means low enemy count		
-
-		if(enemyNearby())
-			System.out.println("Yo! look out!");
+		//currentState = States.Build;  States.Build means low enemy count
 		
-		if (!enoughBuildingsAvailable())
-			currentState = States.Build;
-		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
-			currentState = States.Explore;
-		}  
-		else if (enoughAttackersAvailable()) {
-			currentState = States.Attack;
-		} 
-		else if (enemyNearby()) {
+		/**
+		 *  Basic strategy:
+		 *  
+		 *  While not being attacked:
+		 *  	Try to Build,
+		 *  	Then Explore
+		 *  		Then Attack
+		 *  	otherwise just build
+		 *  
+		 *  If attacked then defend/rebuild/repair
+		 */
+		System.out.println("checking! current state is " + currentState.toString());
+		
+		States lastState = currentState;		
+		
+		if(enemyNearby()==true){
 			currentState = States.Defend;
+		}else
+		{
+			if ((!enoughBuildingsAvailable()) || (!enoughResourcesAvailable()))
+			{
+				currentState = States.Build;			
+			}
+			else if (enoughAttackersAvailable()) 
+			{
+				currentState = States.Attack;
+			}
+			else if (lowEnemyCount()) 
+			{			
+				currentState = States.Explore;			
+			}  		 		
+			else
+				currentState = States.Build;	
 		}
-		else
-			currentState = States.Build;	
 		
+		
+		if(!lastState.equals(currentState))
+			System.out.println("State changed to: " + currentState.toString());
+
+		
+	
+	}
+	
+	private boolean enoughResourcesAvailable()
+	{
+		System.out.println("checking enough resources!: " + currentState.toString());
+		int Minerals, Gas = 0;
+		Minerals = Perception.instance.totalMinerals;
+		Gas = Perception.instance.totalGas;
+		
+		if(Minerals<100 || Gas < 100)
+			return false;
+		else
+			return true;
 	}
 
 	private boolean enemyNearby() {
@@ -61,9 +101,11 @@ public class Strategy {
 		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
-		System.out.println("checking if enemy nearby");
+
+		
 		int count = 0;		
 		count = Perception.instance.totalEnemyUnits;
+		System.out.println("checking enemies!: " + count);
 		if(count>0)
 		{
 			// TODO - testing
@@ -74,9 +116,14 @@ public class Strategy {
 			return false;
 	}
 
-	private boolean enoughAttackersAvailable() {		
-		return Perception.instance.listOfUnitsIdleByType.get(
-				UnitTypes.Zerg_Drone).size() > MIN_DRONES;
+	private boolean enoughAttackersAvailable() {	
+		int drones;
+		drones = Perception.instance.listOfUnitsIdleByType.get(
+				UnitTypes.Zerg_Drone).size();
+		if(drones  > MIN_DRONES)			
+			return true;
+		else
+			return false;
 	}
 
 	private boolean enoughBuildingsAvailable() {
@@ -85,14 +132,19 @@ public class Strategy {
 		 * Hatchery, is that a good choice?
 		 * possibly lairs, they have different capabilities
 		 */
-		int hatcheries, lairs = 0;
-		
+		int hatcheries, drones, spawnpool = 0;
+		// this causes a bug, do we need a spawning pool?
+//		spawnpool = Perception.instance.unitAvailableCountByType
+//				.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
 		hatcheries = Perception.instance.unitAvailableCountByType
 				.get(UnitTypes.Zerg_Hatchery.ordinal());
-		if (hatcheries > MIN_HATCHERIES)
-			return true;
-		else
+		
+		System.out.println("checking enough Buildings");
+		
+		if ((hatcheries < MIN_HATCHERIES) || (spawnpool < MIN_SPAWNING_POOL))
 			return false;
+		else
+			return true;
 	}
 
 	private boolean lowEnemyCount() {
