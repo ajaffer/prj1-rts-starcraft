@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.corba.se.spi.extension.ZeroPortPolicy;
+
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -74,7 +76,7 @@ public class Perception {
 			if(eachUnit.isVisible())
 				count++;
 		}
-		
+		System.out.println(String.format("totalEnemyUnits:%d", totalEnemyUnits));
 		totalEnemyUnits = count;
 	}
 			
@@ -114,6 +116,8 @@ public class Perception {
 				addUnitByType(u, listOfUnitsIdleByType);
 			}
 		}
+		
+		System.out.println(String.format("# of Zerglings: %d", listOfUnitsIdleByType.get(UnitTypes.Zerg_Zergling).size()));
 	}
 
 	private void addUnitByType(Unit u, Map<Integer, List<Unit>> listOfUnitsByType) {

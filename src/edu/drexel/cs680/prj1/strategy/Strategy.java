@@ -21,7 +21,7 @@ public class Strategy {
 
 	/** FSM States */
 	public enum States {
-		Build, Explore, Attack, Defend
+		CollectMinerals, Build, Explore, Attack, Defend
 	};
 	
 	public static Strategy instance;
@@ -35,24 +35,32 @@ public class Strategy {
 	
 	//TODO change this method appropriate to StarCraft
 	public void updateState() {
-		//currentState = States.Build;  States.Build means low enemy count		
-
-		if(enemyNearby())
-			System.out.println("Yo! look out!");
+		States prevState = currentState;
+		currentState = States.CollectMinerals;	
 		
-		if (!enoughBuildingsAvailable())
-			currentState = States.Build;
-		else if (lowEnemyCount() && enoughBuildingsAvailable()) {
-			currentState = States.Explore;
-		}  
-		else if (enoughAttackersAvailable()) {
+		
+		
+
+//		if(enemyNearby())
+//			System.out.println("Yo! look out!");
+		
+//		if (!enoughBuildingsAvailable())
+//			currentState = States.Build;
+//		if (lowEnemyCount() && enoughBuildingsAvailable()) {
+//			currentState = States.Explore;
+//		}  
+		if (enemyNearby()) {
 			currentState = States.Attack;
 		} 
-		else if (enemyNearby()) {
-			currentState = States.Defend;
+//		if (enemyNearby()) {
+//			currentState = States.Defend;
+//		}
+//		else
+//			currentState = States.Build;	
+		
+		if (prevState != currentState) {
+			System.out.println(String.format("State >>>%s<<<", currentState));
 		}
-		else
-			currentState = States.Build;	
 		
 	}
 
@@ -61,13 +69,13 @@ public class Strategy {
 		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
-		System.out.println("checking if enemy nearby");
+//		System.out.println("checking if enemy nearby");
 		int count = 0;		
 		count = Perception.instance.totalEnemyUnits;
 		if(count>0)
 		{
 			// TODO - testing
-			System.out.println("Enemy in sight!  This is how many: " + count);
+//			System.out.println("Enemy in sight!  This is how many: " + count);
 			return true;
 		}
 		else
@@ -76,7 +84,7 @@ public class Strategy {
 
 	private boolean enoughAttackersAvailable() {		
 		return Perception.instance.listOfUnitsIdleByType.get(
-				UnitTypes.Zerg_Drone).size() > MIN_DRONES;
+				UnitTypes.Zerg_Zergling).size() > MIN_DRONES;
 	}
 
 	private boolean enoughBuildingsAvailable() {

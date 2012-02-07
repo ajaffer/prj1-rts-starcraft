@@ -27,7 +27,7 @@ public class GiveOrders {
 	}
 
 	public void sendOrders() {
-		if (Strategy.instance.currentState == Strategy.States.Attack) {
+		if (Strategy.instance.currentState.equals(Strategy.States.Attack)) {
 			attackEnemy();
 		} else if (Strategy.instance.currentState == Strategy.States.Defend) {
 			defend();
@@ -58,6 +58,7 @@ public class GiveOrders {
 		List<Unit> allIdleZerglings = Perception.instance.listOfUnitsIdleByType
 				.get(UnitTypes.Zerg_Zergling);
 
+		System.out.println(String.format("Enemy/Player:%d/%d", allEnemyUnits.size(), allIdleZerglings.size()));
 		ExecuteOrders.instance.moveCloseToEnemy(allIdleZerglings, allEnemyUnits);
 		attack(allIdleZerglings, allEnemyUnits);
 	}
@@ -65,6 +66,7 @@ public class GiveOrders {
 	private void attack(List<Unit> allIdleZerglings, List<Unit> allEnemyUnits) {
 		for (Unit unit : allIdleZerglings) {
 			for (Unit enemy : allEnemyUnits) {
+				System.out.println(String.format("Attack Enemy Unit#>>>%d<<<", unit.getID()));
 				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
 				break;
 			}

@@ -29,6 +29,7 @@ public class ExecuteOrders {
 				zerglingCentroidUnit.getX(), zerglingCentroidUnit.getY(),
 				enemyCentroidUnit.getX(), enemyCentroidUnit.getY());
 
+		System.out.println(String.format("Move close to enemy Unit# >>>%d<<<", enemyCentroidUnit.getID()));
 		moveAlongPath(zerglingCentroidUnit, pathToEnemyCentroidUnit);
 
 		allIdleZerglings.remove(zerglingCentroidUnit);

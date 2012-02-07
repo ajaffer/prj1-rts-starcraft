@@ -96,18 +96,18 @@ public class AIClient implements BWAPIEventListener {
 	 * Called each game cycle.
 	 */
 	public void gameUpdate() {
-		//System.out.println("Cycling ");
+//		System.out.println("Cycling ");
 		//Perception newPerception = new Perception(bwapi);
 		//newPerception.collectData();
 		perception.collectData();
-		
+//		
 		strategy.updateState();
 		strategy.makeDecision();
-		
+//		
 		giveOrders.sendOrders();
 		
 		
-/*		
+		
 		// collect minerals
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
@@ -168,7 +168,7 @@ public class AIClient implements BWAPIEventListener {
 				}
 			}
 		}
-
+/*
 		// attack
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal() && unit.isIdle()) {
