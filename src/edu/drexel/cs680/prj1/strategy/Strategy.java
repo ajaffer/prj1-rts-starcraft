@@ -97,14 +97,11 @@ public class Strategy {
 	}
 
 	private boolean enemyNearby() {
-		// TODO Auto-generated method stub
-		
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
-		int count = 0;		
-		count = Perception.instance.totalEnemyUnits;
-		System.out.println("checking enemies!: " + count);
-		if(count>0)
+		int allEnemyUnits = Perception.instance.allVisibleEnemyUnits().size();
+		System.out.println("checking enemies!: " + allEnemyUnits);
+		if(allEnemyUnits>0)
 		{
 			// TODO - testing
 //			System.out.println("Enemy in sight!  This is how many: " + count);
@@ -146,20 +143,7 @@ public class Strategy {
 	}
 
 	private boolean lowEnemyCount() {
-		return Perception.instance.enemyUnitCountsByType.size() < ENEMY_UNIT_SAFE_COUNT;
-	}
-
-	//TODO Remove this
-	public void makeDecision() {
-		for (Unit unit : bwapi.getMyUnits()) {
-			if (unit.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
-				if (bwapi.getSelf().getMinerals() >= 50
-						&& !AgentState.morphedDrone) {
-					GiveOrders.morphDrone(unit.getID(),
-							UnitTypes.Zerg_Drone.ordinal());
-				}
-			}
-		}
+		return Perception.instance.enemyUnitVisibleCountsByType.size() < ENEMY_UNIT_SAFE_COUNT;
 	}
 
 }

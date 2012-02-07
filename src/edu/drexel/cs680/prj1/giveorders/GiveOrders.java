@@ -20,14 +20,6 @@ public class GiveOrders {
 		this.bwapi = bwapi;
 	}
 	
-	
-
-	// TODO remove this
-	public static void morphDrone(int id, int ordinal) {
-		instance.bwapi.morph(id, ordinal);
-		AgentState.morphedDrone = true;
-	}
-
 	public void sendOrders() {
 		if (Strategy.instance.currentState.equals(Strategy.States.Attack)) {
 			attackEnemy();
@@ -75,8 +67,9 @@ public class GiveOrders {
 		if(Perception.instance.totalMinerals < 100)			// this is from the Strategy "enoughResourcesAvailable" method
 			gatherMinerals();
 
-		if(Perception.instance.buildingExtractor < 1)
-			buildExtractor();
+		//TODO move logic to Strategy
+//		if(Perception.instance.buildingExtractor < 1)
+//			buildExtractor();
 		
 		if(Perception.instance.totalGas< 100)
 			gatherGas();
@@ -89,7 +82,7 @@ public class GiveOrders {
 	}
 
 	private void attackEnemy() {
-		List<Unit> allEnemyUnits = Perception.instance.allEnemyUnits();
+		List<Unit> allEnemyUnits = Perception.instance.allVisibleEnemyUnits();
 		List<Unit> allIdleZerglings = Perception.instance.listOfUnitsIdleByType
 				.get(UnitTypes.Zerg_Zergling);
 

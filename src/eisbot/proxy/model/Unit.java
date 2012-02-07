@@ -1,4 +1,7 @@
 package eisbot.proxy.model;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * Represents a StarCraft unit.
  * 
@@ -688,5 +691,10 @@ public class Unit {
 
 	public boolean isVisible() {
 		return visible;
+	}
+	
+	@Override
+	public String toString() {
+		return ""+this.ID;
 	}
 }

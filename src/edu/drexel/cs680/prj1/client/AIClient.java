@@ -35,14 +35,14 @@ public class AIClient implements BWAPIEventListener {
 	/** Pathfinding Module*/
 	PathFinding pathFinding;
 
-//	/** has drone 5 been morphed */
-//	private boolean morphedDrone = false;
-//	
-//	/** has a drone been assigned to building a pool? */
-//	private int poolDrone = -1;
-//
-//	/** when should the next overlord be spawned? */
-//	private int supplyCap = 0;
+	/** has drone 5 been morphed */
+	private boolean morphedDrone = false;
+	
+	/** has a drone been assigned to building a pool? */
+	private int poolDrone = -1;
+
+	/** when should the next overlord be spawned? */
+	private int supplyCap = 0;
 
 	/**
 	 * Create a Java AI.
@@ -96,18 +96,21 @@ public class AIClient implements BWAPIEventListener {
 	 * Called each game cycle.
 	 */
 	public void gameUpdate() {
-//		System.out.println("Cycling ");
-		//Perception newPerception = new Perception(bwapi);
-		//newPerception.collectData();
 		perception.collectData();
-//		
 		strategy.updateState();
-		strategy.makeDecision();
-//		
 		giveOrders.sendOrders();
+		System.out.println(String.format("Perception:%s", perception.toString()));
 		
-		
-		
+		// spawn a drone
+		for (Unit unit : bwapi.getMyUnits()) {
+			if (unit.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
+				if (bwapi.getSelf().getMinerals() >= 50 && !morphedDrone) {
+					bwapi.morph(unit.getID(), UnitTypes.Zerg_Drone.ordinal());
+					morphedDrone = true;
+				}
+			}
+		}		
+
 		// collect minerals
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
@@ -168,17 +171,16 @@ public class AIClient implements BWAPIEventListener {
 				}
 			}
 		}
-/*
-		// attack
-		for (Unit unit : bwapi.getMyUnits()) {
-			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal() && unit.isIdle()) {
-				for (Unit enemy : bwapi.getEnemyUnits()) {
-					bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
-					break;
-				}
-			}
-		}
-		*/
+
+//		// attack
+//		for (Unit unit : bwapi.getMyUnits()) {
+//			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal() && unit.isIdle()) {
+//				for (Unit enemy : bwapi.getEnemyUnits()) {
+//					bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
+//					break;
+//				}
+//			}
+//		}
 	}
 
 	public void gameEnded() {}
