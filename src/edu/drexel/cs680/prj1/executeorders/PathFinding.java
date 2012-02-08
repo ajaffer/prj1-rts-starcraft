@@ -53,6 +53,7 @@ public class PathFinding {
 	}
 
 	public List<Node> StartAStar() {
+		System.out.println("Running A*");
 		ArrayList<Node> listOpen = new ArrayList<Node>();
 		ArrayList<Node> listClosed = new ArrayList<Node>();
 		ArrayList<Node> listOK = new ArrayList<Node>();

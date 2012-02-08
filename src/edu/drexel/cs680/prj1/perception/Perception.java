@@ -9,6 +9,7 @@ import java.util.Map;
 import edu.drexel.cs680.prj1.util.Util;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
+import eisbot.proxy.types.UnitType;
 import eisbot.proxy.types.UnitType.UnitTypes;
 
 public class Perception {
@@ -20,6 +21,10 @@ public class Perception {
 	public Map<Integer, Integer> unitAvailableCountByType;
 	public Map<Integer, Integer> enemyUnitVisibleCountsByType;
 	public Map<Integer, List<Unit>> listOfUnitsIdleByType;
+	
+	public ArrayList<Unit> listOfMineralFields;
+	//public Map<Integer, List<Unit>> listOfMineralFields;
+	public ArrayList<Unit> listOfGasFields;
 //	public List<Unit> listOfAttackers;
 	public Map<Unit, Integer> lastCommandByUnit;
 	
@@ -44,6 +49,9 @@ public class Perception {
 		unitAvailableCountByType = new HashMap<Integer, Integer>();
 		enemyUnitVisibleCountsByType = new HashMap<Integer, Integer>();
 		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
+		
+		listOfMineralFields = new ArrayList<Unit>();
+		listOfGasFields = new ArrayList<Unit>();
 //		listOfAttackers = new ArrayList<Unit>();
 		lastCommandByUnit = new HashMap<Unit, Integer>();
 		
@@ -64,8 +72,9 @@ public class Perception {
 		List<Unit> zerglings = listOfUnitsIdleByType.get(UnitTypes.Zerg_Zergling.ordinal());
 		if (zerglings!=null && !zerglings.isEmpty()) {
 			builder.append(String.format("zerglings:%s, ", zerglings.size()));
+			
 		}
-		builder.append(String.format("visisble enemies:%s, ", allVisibleEnemyUnits().size()));
+		builder.append(String.format("visible enemies:%s, ", allVisibleEnemyUnits().size()));
 //		builder.append(String.format("lastCommands:%s, ", Util.toString(lastCommandByUnit)));
 		builder.append(String.format("minerals:%d, ", totalMinerals));
 		builder.append(String.format("gas:%d, ", totalGas));
@@ -80,7 +89,9 @@ public class Perception {
 	public void collectData() {
 	
 		updateAvailableMinerals();
+		updateAvailableMineralsList();
 		updateAvailableGas();
+		updateAvailableGasList();
 		updateAvailableUnitCountsByType();
 		updateEnemyUnitVisibleCountsByType();
 		updateListOfIdleUnitsByType();
@@ -90,12 +101,13 @@ public class Perception {
 
 	private void updateAvailableMinerals()
 	{
-		totalMinerals = bwapi.getSelf().getCumulativeMinerals();
+		//totalMinerals = bwapi.getSelf().getCumulativeMinerals();
+		totalMinerals = bwapi.getSelf().getMinerals();
 	}
 	
 	private void updateAvailableGas()
 	{
-		totalGas = bwapi.getSelf().getCumulativeGas();
+		totalGas = bwapi.getSelf().getGas();
 	}
 	
 //	private void updateEnemyUnitCount()
@@ -176,6 +188,24 @@ public class Perception {
 			incrementUnitType(u.getTypeID(), unitAvailableCountByType);
 		}
 	}
+	
+	private void updateAvailableMineralsList(){
+		listOfMineralFields.clear();
+		
+		for (Unit u : bwapi.getNeutralUnits()){
+			if(u.getTypeID()==UnitTypes.Resource_Mineral_Field.ordinal())
+				listOfMineralFields.add(u);
+		}
+	}
+	
+	private void updateAvailableGasList(){
+		listOfGasFields.clear();
+		
+		for (Unit u : bwapi.getNeutralUnits()){
+			if(u.getTypeID()==UnitTypes.Resource_Vespene_Geyser.ordinal())
+				listOfGasFields.add(u);
+		}
+	}
 
 	private void incrementUnitType(int typeID, Map<Integer,Integer> unitByType) {
 		Integer count = unitByType.get(typeID);
@@ -229,6 +259,75 @@ public class Perception {
 		Perception p = new Perception(null);
 		p.unitAvailableCountByType.put(UnitTypes.Zerg_Drone.ordinal(), 2);
 		System.out.println(p.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()));
+	}
+	
+	public int getNearestGasChamber(Unit referenceUnit){
+		// allows to find the nearest gaas chamber
+		double x, y, xRef, yRef = 0;
+		double lastRange, range = 0;
+		int lastUnit = -1;
+		int currentUnit = -1;
+	
+		lastRange = 99999999;
+		xRef = referenceUnit.getX();
+		yRef = referenceUnit.getY();
+		for(Unit everyUnit: listOfGasFields)
+			if(everyUnit.equals(UnitTypes.Resource_Vespene_Geyser))
+				if(everyUnit.isCarryingGas())
+				{
+					x = everyUnit.getX();
+					y = everyUnit.getY();
+					currentUnit = everyUnit.getID();
+					range = distance(x, y, xRef, yRef);
+					if(range<lastRange)
+					{
+						lastRange=range;
+						lastUnit = currentUnit;
+					}
+				}
+					
+		
+		return lastUnit;
+//		if(lastRange < 500)
+//			return lastUnit;
+//		else
+//			return -1;
+	}
+	
+	public int getNearestMineralField(Unit referenceUnit){
+		// allows to find the nearest gaas chamber
+		double x, y, xRef, yRef = 0;
+		double lastRange, range = 0;
+		int lastUnit = -1;
+		int currentUnit = -1;
+	
+		lastRange = 9999;
+		xRef = referenceUnit.getX();
+		yRef = referenceUnit.getY();
+		for(Unit everyUnit: listOfMineralFields)
+			if(everyUnit.equals(UnitTypes.Resource_Mineral_Field))
+				if(everyUnit.isCarryingGas())
+				{
+					x = everyUnit.getX();
+					y = everyUnit.getY();
+					currentUnit = everyUnit.getID();
+					range = distance(x, y, xRef, yRef);
+					if(range<lastRange)
+					{
+						lastRange=range;
+						lastUnit = currentUnit;
+					}
+				}
+					
+		if(lastRange < 500)
+			return lastUnit;
+		else
+			return -1;
+	}
+	
+	public double distance(double x1, double y1, double x2, double y2)
+	{
+		return(Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)));
 	}
 
 }

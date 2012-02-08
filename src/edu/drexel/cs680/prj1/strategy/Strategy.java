@@ -51,7 +51,7 @@ public class Strategy {
 		 *  
 		 *  If attacked then defend/rebuild/repair
 		 */
-		System.out.println("checking! current state is " + currentState.toString());
+		System.out.println("current state is " + currentState.toString());
 		
 		States lastState = currentState;		
 		
@@ -79,7 +79,7 @@ public class Strategy {
 		if(!lastState.equals(currentState))
 			System.out.println("State changed to: " + currentState.toString());
 
-		
+		//System.out.println("Nearest gas  chamber is " + Perception.instance.nearestGasChamber(referenceUnit))
 	
 	}
 	
@@ -100,11 +100,11 @@ public class Strategy {
 		// if the enemy appears in the window, then...
 		// this is assumed with the number of VISIBLE units
 		int allEnemyUnits = Perception.instance.allVisibleEnemyUnits().size();
-		System.out.println("checking enemies!: " + allEnemyUnits);
+		//System.out.println("checking enemies!: " + allEnemyUnits);
 		if(allEnemyUnits>0)
 		{
 			// TODO - testing
-//			System.out.println("Enemy in sight!  This is how many: " + count);
+			//System.out.println("Enemy in sight!  This is how many: " + allEnemyUnits);
 			return true;
 		}
 		else

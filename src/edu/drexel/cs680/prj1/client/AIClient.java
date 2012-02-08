@@ -101,6 +101,7 @@ public class AIClient implements BWAPIEventListener {
 		giveOrders.sendOrders();
 		System.out.println(String.format("Perception:%s", perception.toString()));
 		
+		/**
 		// spawn a drone
 		for (Unit unit : bwapi.getMyUnits()) {
 			if (unit.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
@@ -171,7 +172,7 @@ public class AIClient implements BWAPIEventListener {
 				}
 			}
 		}
-
+*/
 //		// attack
 //		for (Unit unit : bwapi.getMyUnits()) {
 //			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal() && unit.isIdle()) {
