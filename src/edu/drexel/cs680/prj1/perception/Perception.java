@@ -3,10 +3,11 @@ package edu.drexel.cs680.prj1.perception;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import edu.drexel.cs680.prj1.util.Util;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -19,7 +20,10 @@ public class Perception {
 
 	public Map<Integer, Integer> unitAvailableCountByType;
 	public Map<Integer, Integer> enemyUnitVisibleCountsByType;
-	public Map<Integer, List<Unit>> listOfUnitsIdleByType;
+	public Map<Integer, Set<Unit>> setOfUnitsByType;
+	public Map<Integer, Set<Unit>> setOfIdleUnitsByType;
+	public Map<Integer, Set<Unit>> setOfNeutralUnitsByType;
+	
 //	public List<Unit> listOfAttackers;
 	public Map<Unit, Integer> lastCommandByUnit;
 	
@@ -29,6 +33,17 @@ public class Perception {
 	public int totalMinerals;
 //	public int totalExtractors;
 	public int totalGas;
+	public boolean morphedDrone;
+
+	public int poolDrone = -1;
+
+	public HashSet<Unit> claimed;
+
+	public int supplyUsed;
+
+	public int supplyTotal;
+
+	public int supplyCap;
 
 //	public int armyDrone;
 //	public int armyZergling;
@@ -43,9 +58,13 @@ public class Perception {
 		
 		unitAvailableCountByType = new HashMap<Integer, Integer>();
 		enemyUnitVisibleCountsByType = new HashMap<Integer, Integer>();
-		listOfUnitsIdleByType = new HashMap<Integer, List<Unit>>();
+		setOfUnitsByType = new HashMap<Integer, Set<Unit>>();
+		setOfIdleUnitsByType = new HashMap<Integer, Set<Unit>>();
+		setOfNeutralUnitsByType = new HashMap<Integer, Set<Unit>>();
+		
 //		listOfAttackers = new ArrayList<Unit>();
 		lastCommandByUnit = new HashMap<Unit, Integer>();
+		claimed = new HashSet<Unit>();
 		
 		totalMinerals = 0;
 		totalGas = 0;
@@ -56,12 +75,13 @@ public class Perception {
 		
 
 //		enemyUnitCountsByType = new HashMap<Integer, Integer>();
+		morphedDrone = false;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		List<Unit> zerglings = listOfUnitsIdleByType.get(UnitTypes.Zerg_Zergling.ordinal());
+		Set<Unit> zerglings = setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
 		if (zerglings!=null && !zerglings.isEmpty()) {
 			builder.append(String.format("zerglings:%s, ", zerglings.size()));
 		}
@@ -83,14 +103,34 @@ public class Perception {
 		updateAvailableGas();
 		updateAvailableUnitCountsByType();
 		updateEnemyUnitVisibleCountsByType();
-		updateListOfIdleUnitsByType();
+		updateSetOfUnitsByType();
+		updateSetOfNeutralUnitsByType();
+		updateSetOfIdleUnitsByType();
+		updateSupplyUsed();
+		updateSupplyTotal();
 //		updateLastCommandsByUnit();
 //////		updateEnemyUnitCount();
 	}
 
+	private void updateSetOfNeutralUnitsByType() {
+		List<Unit> neutralUnits = bwapi.getNeutralUnits();
+		for (Unit neutralUnit : neutralUnits) {
+			addUnitByType(neutralUnit, setOfNeutralUnitsByType);
+		}
+//		System.out.println("neutralUnits: " + setOfNeutralUnitsByType.size());
+	}
+
+	private void updateSupplyTotal() {
+		supplyTotal = bwapi.getSelf().getSupplyTotal();		
+	}
+
+	private void updateSupplyUsed() {
+		supplyUsed = bwapi.getSelf().getSupplyUsed();		
+	}
+
 	private void updateAvailableMinerals()
 	{
-		totalMinerals = bwapi.getSelf().getCumulativeMinerals();
+		totalMinerals = bwapi.getSelf().getMinerals();
 	}
 	
 	private void updateAvailableGas()
@@ -153,19 +193,25 @@ public class Perception {
 		}
 	}
 
-	private void updateListOfIdleUnitsByType() {
+	private void updateSetOfUnitsByType() {
+		for (Unit u : bwapi.getMyUnits()) {
+			addUnitByType(u, setOfUnitsByType);
+		}
+	}
+
+	private void updateSetOfIdleUnitsByType() {
 		for (Unit u : bwapi.getMyUnits()) {
 			if (u.isIdle()) {
-				addUnitByType(u, listOfUnitsIdleByType);
+				addUnitByType(u, setOfIdleUnitsByType);
 			}
 		}
 	}
 
-	private void addUnitByType(Unit u, Map<Integer, List<Unit>> listOfUnitsByType) {
-		List<Unit> availableUnits = listOfUnitsByType.get(u.getTypeID());
+	private void addUnitByType(Unit u, Map<Integer, Set<Unit>> setOfUnitsByType) {
+		Set<Unit> availableUnits = setOfUnitsByType.get(u.getTypeID());
 		if (availableUnits == null) {
-			availableUnits = new ArrayList<Unit>();
-			listOfUnitsByType.put(u.getTypeID(), availableUnits);
+			availableUnits = new HashSet<Unit>();
+			setOfUnitsByType.put(u.getTypeID(), availableUnits);
 		}
 		
 		availableUnits.add(u);
@@ -187,14 +233,12 @@ public class Perception {
 	}
 	
 	private Unit getHatchery() {
-		List<Unit> hatcheryUnits = listOfUnitsIdleByType.get(UnitTypes.Zerg_Hatchery);
+		Set<Unit> hatcheryUnits = setOfUnitsByType.get(UnitTypes.Zerg_Hatchery);
 		
 		if (hatcheryUnits==null || hatcheryUnits.isEmpty()) {
 			return null;
 		}
-		
-		Unit hatchery = hatcheryUnits.get(0);
-		
+		Unit hatchery = hatcheryUnits.toArray(new Unit[0])[0];
 		return hatchery;
 	}
 	
@@ -230,5 +274,46 @@ public class Perception {
 		p.unitAvailableCountByType.put(UnitTypes.Zerg_Drone.ordinal(), 2);
 		System.out.println(p.unitAvailableCountByType.get(UnitTypes.Zerg_Drone.ordinal()));
 	}
+
+	public Set<Unit> getDrones() {
+		Set<Unit> drones = Perception.instance.setOfIdleUnitsByType.get(UnitTypes.Zerg_Drone.ordinal());
+		if (drones==null || drones.isEmpty()) {
+			return new HashSet<Unit>();
+		}
+//		System.out.println("drones "+drones.size()+" size");
+		for (Unit drone : drones) {
+			if (drone.getID() == Perception.instance.poolDrone) {
+				drones.remove(drone);
+			}
+		}
+		
+		return drones;
+	}
+
+	public Set<Unit> getUnclaimedMinerals() {
+		Set<Unit> minerals = setOfNeutralUnitsByType.get(UnitTypes.Resource_Mineral_Field.ordinal());
+		if (minerals==null || minerals.isEmpty()) {
+//			System.out.println("No Minerals Found!!");
+			return new HashSet<Unit>();
+		}
+
+//		System.out.println("minerals "+minerals.size()+" size");
+		minerals.removeAll(claimed);
+//		System.out.println("after remove, minerals "+minerals.size()+" size");
+		return minerals;
+	}
+	
+	public Set<Unit> getCompletedZerglingSpawingPool() {
+		Set<Unit> spawningPools = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
+		for (Unit spawningPool : spawningPools) {
+			if (!spawningPool.isCompleted()) {
+				spawningPools.remove(spawningPool);
+			}
+		}
+		
+		return spawningPools;
+	}
+
+	
 
 }

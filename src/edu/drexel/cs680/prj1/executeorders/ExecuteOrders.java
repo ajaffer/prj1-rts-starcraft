@@ -1,9 +1,11 @@
 package edu.drexel.cs680.prj1.executeorders;
 
 import java.util.List;
+import java.util.Set;
 
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
+import eisbot.proxy.types.UnitType.UnitTypes;
 
 public class ExecuteOrders {
 
@@ -15,12 +17,13 @@ public class ExecuteOrders {
 		this.bwapi = bwapi;
 	}
 
-	/** 
-	 * 1. Finds the enemy and player's centroid units.
-	 * 2. Move player's centroid unit close to the enemy's centroid
-	 * 3. Moves player's other units on the same path as the centroid unit*/
-	public void moveCloseToEnemy(List<Unit> allIdleZerglings,
-			List<Unit> allEnemyUnits) {
+	/**
+	 * 1. Finds the enemy and player's centroid units. 2. Move player's centroid
+	 * unit close to the enemy's centroid 3. Moves player's other units on the
+	 * same path as the centroid unit
+	 */
+	public void moveCloseToEnemy(Set<Unit> allIdleZerglings,
+			Set<Unit> allEnemyUnits) {
 
 		Unit enemyCentroidUnit = getCentroidUnit(allEnemyUnits);
 		Unit zerglingCentroidUnit = getCentroidUnit(allIdleZerglings);
@@ -29,7 +32,8 @@ public class ExecuteOrders {
 				zerglingCentroidUnit.getX(), zerglingCentroidUnit.getY(),
 				enemyCentroidUnit.getX(), enemyCentroidUnit.getY());
 
-		System.out.println(String.format("Move close to enemy Unit# >>>%d<<<", enemyCentroidUnit.getID()));
+		System.out.println(String.format("Move close to enemy Unit# >>>%d<<<",
+				enemyCentroidUnit.getID()));
 		moveAlongPath(zerglingCentroidUnit, pathToEnemyCentroidUnit);
 
 		allIdleZerglings.remove(zerglingCentroidUnit);
@@ -39,7 +43,7 @@ public class ExecuteOrders {
 	}
 
 	private void moveToLeaderThanPath(Unit zerglingCentroidUnit,
-			List<Node> pathToEnemyCentroidUnit, List<Unit> allZerglings) {
+			List<Node> pathToEnemyCentroidUnit, Set<Unit> allZerglings) {
 		for (Unit zergling : allZerglings) {
 			List<Node> pathToZerglingCentroidUnit = PathFinding.instance
 					.findPath(zergling.getX(), zergling.getY(),
@@ -58,8 +62,20 @@ public class ExecuteOrders {
 		}
 	}
 
-	private Unit getCentroidUnit(List<Unit> allEnemyUnits) {
+	private Unit getCentroidUnit(Set<Unit> allEnemyUnits) {
 		// TODO implement a proper centroid unit
-		return allEnemyUnits.get(allEnemyUnits.size() / 2);
+		return allEnemyUnits.toArray(new Unit[0])[allEnemyUnits.size() / 2];
+	}
+
+	public void morphToDrone(Unit larva) {
+		bwapi.morph(larva.getID(), UnitTypes.Zerg_Drone.ordinal());
+	}
+
+	public void buildSpawinPool(Integer poolDrone, Unit overlord) {
+		bwapi.build(poolDrone, overlord.getTileX(), overlord.getTileY(), UnitTypes.Zerg_Spawning_Pool.ordinal());		
+	}
+
+	public void morphToOverlord(Unit larva) {
+		bwapi.morph(larva.getID(), UnitTypes.Zerg_Overlord.ordinal());		
 	}
 }

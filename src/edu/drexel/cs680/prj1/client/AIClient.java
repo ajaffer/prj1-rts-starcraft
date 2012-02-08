@@ -2,6 +2,7 @@ package edu.drexel.cs680.prj1.client;
 
 import java.util.HashSet;
 
+import edu.drexel.cs680.prj1.executeorders.ExecuteOrders;
 import edu.drexel.cs680.prj1.executeorders.PathFinding;
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
 import edu.drexel.cs680.prj1.perception.AgentState;
@@ -35,6 +36,9 @@ public class AIClient implements BWAPIEventListener {
 	/** Pathfinding Module*/
 	PathFinding pathFinding;
 
+	/** ExecuteOrders Module*/
+	private ExecuteOrders executeOrders;
+
 	/** has drone 5 been morphed */
 	private boolean morphedDrone = false;
 	
@@ -43,6 +47,7 @@ public class AIClient implements BWAPIEventListener {
 
 	/** when should the next overlord be spawned? */
 	private int supplyCap = 0;
+
 
 	/**
 	 * Create a Java AI.
@@ -89,6 +94,7 @@ public class AIClient implements BWAPIEventListener {
 		perception = new Perception(bwapi);
 		strategy = new Strategy(bwapi);
 		giveOrders = new GiveOrders(bwapi);
+		executeOrders = new ExecuteOrders(bwapi);
 		pathFinding = new PathFinding(bwapi);
 	}
 	
@@ -97,90 +103,9 @@ public class AIClient implements BWAPIEventListener {
 	 */
 	public void gameUpdate() {
 		perception.collectData();
-		strategy.updateState();
-		giveOrders.sendOrders();
 		System.out.println(String.format("Perception:%s", perception.toString()));
-		
-		// spawn a drone
-		for (Unit unit : bwapi.getMyUnits()) {
-			if (unit.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
-				if (bwapi.getSelf().getMinerals() >= 50 && !morphedDrone) {
-					bwapi.morph(unit.getID(), UnitTypes.Zerg_Drone.ordinal());
-					morphedDrone = true;
-				}
-			}
-		}		
-
-		// collect minerals
-		for (Unit unit : bwapi.getMyUnits()) {
-			if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
-				if (unit.isIdle() && unit.getID() != AgentState.poolDrone) {
-					
-					for (Unit minerals : bwapi.getNeutralUnits()) {
-						if (minerals.getTypeID() == UnitTypes.Resource_Mineral_Field.ordinal() && !claimed.contains(minerals.getID())) {
-							double distance = Math.sqrt(Math.pow(minerals.getX() - unit.getX(), 2) + Math.pow(minerals.getY() - unit.getY(), 2));
-							
-							if (distance < 300) {
-								bwapi.rightClick(unit.getID(), minerals.getID());
-								claimed.add(minerals.getID());
-								break;
-							}
-						}
-					}					
-				}
-			}
-		}
-		
-		// build a spawning pool
-		if (bwapi.getSelf().getMinerals() >= 200 && AgentState.poolDrone < 0) {
-			for (Unit unit : bwapi.getMyUnits()) {
-				if (unit.getTypeID() == UnitTypes.Zerg_Drone.ordinal()) {
-					AgentState.poolDrone = unit.getID();
-					break;
-				}
-			}
-			
-			// build the pool under the overlord
-			for (Unit unit : bwapi.getMyUnits()) {
-				if (unit.getTypeID() == UnitTypes.Zerg_Overlord.ordinal()) {
-					bwapi.build(AgentState.poolDrone, unit.getTileX(), unit.getTileY(), UnitTypes.Zerg_Spawning_Pool.ordinal());
-				}				
-			}
-		}
-		
-		// spawn overlords
-		if (bwapi.getSelf().getSupplyUsed() + 2 >= bwapi.getSelf().getSupplyTotal() && bwapi.getSelf().getSupplyTotal() > AgentState.supplyCap) {			
-			if (bwapi.getSelf().getMinerals() >= 100) {
-				for (Unit larva : bwapi.getMyUnits()) {
-					if (larva.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
-						bwapi.morph(larva.getID(), UnitTypes.Zerg_Overlord.ordinal());
-						AgentState.supplyCap = bwapi.getSelf().getSupplyTotal();
-					}
-				}									
-			}
-		}
-		// spawn zerglings
-		else if (bwapi.getSelf().getMinerals() >= 50) {
-			for (Unit unit : bwapi.getMyUnits()) {
-				if (unit.getTypeID() == UnitTypes.Zerg_Spawning_Pool.ordinal() && unit.isCompleted()) {
-					for (Unit larva : bwapi.getMyUnits()) {
-						if (larva.getTypeID() == UnitTypes.Zerg_Larva.ordinal()) {
-							bwapi.morph(larva.getID(), UnitTypes.Zerg_Zergling.ordinal());
-						}
-					}					
-				}
-			}
-		}
-
-//		// attack
-//		for (Unit unit : bwapi.getMyUnits()) {
-//			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal() && unit.isIdle()) {
-//				for (Unit enemy : bwapi.getEnemyUnits()) {
-//					bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
-//					break;
-//				}
-//			}
-//		}
+		strategy.updateFSM();
+		strategy.apply();
 	}
 
 	public void gameEnded() {}
