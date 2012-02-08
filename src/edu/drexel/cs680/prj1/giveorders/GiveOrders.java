@@ -86,7 +86,7 @@ public class GiveOrders {
 	// Set<Unit> allEnemyUnits = Perception.instance.allVisibleEnemyUnits();
 	// Set<Unit> allIdleZerglings = Perception.instance.listOfUnitsByType
 	// .get(UnitTypes.Zerg_Zergling);
-	private void attackEnemy(Set<Unit> allEnemyUnits,
+	public void attackEnemy(Set<Unit> allEnemyUnits,
 			Set<Unit> allIdleZerglings) {
 		System.out.println(String.format("Enemy/Player:%d/%d",
 				allEnemyUnits.size(), allIdleZerglings.size()));
@@ -172,6 +172,11 @@ public class GiveOrders {
 	}
 
 	public void attackEnemenyLocation() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void sendPatrol(Set<Unit> patrolers) {
 		// TODO Auto-generated method stub
 		
 	}

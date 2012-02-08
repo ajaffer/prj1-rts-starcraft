@@ -130,13 +130,21 @@ public class Strategy {
 	private void patrol() {
 		// TODO Auto-generated method stub
 		// Send out a few zerglings to different corners to locate enemy
-		
+		Set<Unit> patrolers = getSomePatrolers();
+		GiveOrders.instance.sendPatrol(patrolers);
+	}
+
+	private Set<Unit> getSomePatrolers() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private void attack() {
 		// TODO implement the following stubs
-		GiveOrders.instance.moveZerglingsToEnemenyLocation();
-		GiveOrders.instance.attackEnemenyLocation();
+		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
+		Set<Unit> attackers = getSomeAttackers();
+		
+		GiveOrders.instance.attackEnemy(enemyUnits, attackers);
 		
 //		for (Unit unit : bwapi.getMyUnits()) {
 //			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal()
@@ -147,6 +155,16 @@ public class Strategy {
 //				}
 //			}
 //		}
+	}
+
+	private Set<Unit> getSomeAttackers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Set<Unit> getDiscoveredEnemyUnits() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private void spawnZerglings() {
