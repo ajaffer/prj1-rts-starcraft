@@ -176,8 +176,47 @@ public class GiveOrders {
 		
 	}
 
-	public void sendPatrol(Set<Unit> patrolers) {
+	public int[] sendPatrol(Set<Unit> patrolers) {
 		// TODO Auto-generated method stub
+		// send to random area in the map that is walkable
+		System.out.println("Figuring out patrol route...");
+		int mapX, mapY = 0;
 		
+		mapX = bwapi.getMap().getWidth();
+		mapY = bwapi.getMap().getHeight();
+		
+		mapX = Math.round(mapX/2);
+		mapY = Math.round(mapY/2);
+		
+		// check if that part of the map is traversable
+		// otherwise find a different area
+		
+		int step=(int) (Math.random()*10);
+		int dest[] = new int[2];
+		while(!bwapi.getMap().isWalkable(mapX, mapY))
+		{
+			mapX+=1;
+			if(bwapi.getMap().isWalkable(mapX, mapY))
+				break;
+			mapY+=1;
+			if(bwapi.getMap().isWalkable(mapX, mapY))
+				break;
+			
+			step++;
+			mapX-=1;
+			if(bwapi.getMap().isWalkable(mapX, mapY))
+				break;
+			mapY-=1;
+			if(bwapi.getMap().isWalkable(mapX, mapY))
+				break;
+		}
+			
+			
+		for(Unit u: patrolers)
+			bwapi.move(u.getID(), mapX, mapY);
+		
+		dest[0]=mapX;
+		dest[1]=mapY;
+		return 
 	}
 }

@@ -19,6 +19,7 @@ public class Strategy {
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
 	private static final int MIN_SPAWNING_POOL = 1;
+	private static final int MIN_ZERGLINGS_TO_PATROL = 20;
 
 	private JNIBWAPI bwapi;
 
@@ -65,6 +66,8 @@ public class Strategy {
 		if (enemyLocated()) {
 			produceState = States.ATTACK;
 		}
+		
+		System.out.println("Current State produce state: " + produceState.toString());
 
 //		if (!lastConsumeState.equals(consumeState)) {
 //			System.out.println(String.format("Consume State>>>%s<<<",
@@ -83,7 +86,25 @@ public class Strategy {
 
 	private boolean enoughZerglings() {
 		// TODO Auto-generated method stub
-		return false;
+		
+		
+		Set<Unit> zerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
+		if(zerglings==null)
+		{			
+			return false;
+		}
+		
+		if(zerglings.size()>=MIN_ZERGLINGS_TO_PATROL)
+		{
+		//	System.out.println("Enough zerglings!");
+			return true;
+			
+		}
+		else
+		{
+	//		System.out.println("No t Enough zerglings!");
+			return false;
+		}
 	}
 
 	public void apply() {
@@ -116,9 +137,11 @@ public class Strategy {
 			
 		case PATROL:
 			patrol();
+			break;
 			
 		case ATTACK:
 			attack();
+			break;
 			
 
 		default:
@@ -130,13 +153,52 @@ public class Strategy {
 	private void patrol() {
 		// TODO Auto-generated method stub
 		// Send out a few zerglings to different corners to locate enemy
+		boolean located = false;
 		Set<Unit> patrolers = getSomePatrolers();
-		GiveOrders.instance.sendPatrol(patrolers);
+		System.out.println("Sending patrol!!!");
+		int[] destCoordinates;
+		destCoordinates = new int[2];
+		destCoordinates = GiveOrders.instance.sendPatrol(patrolers);
+		
+		//while(!enemyLocated())
+		while(!located)
+		{
+			for(Unit u: patrolers)
+				if(u.isMoving())
+					continue;
+				else
+				{
+					for(Unit e: bwapi.getEnemyUnits())
+							if(distance(destCoordinates[0],destCoordinates[1],e.getX(),e.getY())<5)
+							{
+								located=true;
+								break;
+								
+							}
+					
+					
+					
+				}
+		}
+		
+		if(located)
+			attack();
+		else
+			returnToBase();
+		
+	}
+	
+	private double distance(int x1, int y1, int x2, int y2)
+	{
+		return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
 	}
 
 	private Set<Unit> getSomePatrolers() {
 		// TODO Auto-generated method stub
-		return null;
+		System.out.println("Getting patrollers...");
+		Set<Unit> idleZerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
+		System.out.println("Total Zerglings used " + idleZerglings.size());
+		return idleZerglings;
 	}
 
 	private void attack() {
@@ -164,7 +226,7 @@ public class Strategy {
 
 	private Set<Unit> getDiscoveredEnemyUnits() {
 		// TODO Auto-generated method stub
-		return null;
+		return null;		
 	}
 
 	private void spawnZerglings() {
