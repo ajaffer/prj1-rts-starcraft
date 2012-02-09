@@ -217,6 +217,6 @@ public class GiveOrders {
 		
 		dest[0]=mapX;
 		dest[1]=mapY;
-		return 
+		return dest;
 	}
 }
