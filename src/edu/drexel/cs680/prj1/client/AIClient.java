@@ -103,7 +103,7 @@ public class AIClient implements BWAPIEventListener {
 	 */
 	public void gameUpdate() {
 		perception.collectData();
-		System.out.println(String.format("Perception:%s", perception.toString()));
+		//System.out.println(String.format("Perception:%s", perception.toString()));
 		strategy.updateFSM();
 		strategy.apply();
 	}

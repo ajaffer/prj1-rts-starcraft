@@ -34,6 +34,7 @@ public class Perception {
 //	public int totalExtractors;
 	public int totalGas;
 	public boolean morphedDrone;
+	public boolean patrolSent;
 
 	public int poolDrone = -1;
 
@@ -68,6 +69,7 @@ public class Perception {
 		
 		totalMinerals = 0;
 		totalGas = 0;
+		patrolSent = false;
 //		totalExtractors = 0;
 //		armyDrone = 0;		// drone army is 5 Zerg Drones for gathering		
 //		armyZergling = 0;   // Zergling army is 20 Zerglings for attacking
@@ -85,7 +87,7 @@ public class Perception {
 		if (zerglings!=null && !zerglings.isEmpty()) {
 			builder.append(String.format("zerglings:%s, ", zerglings.size()));
 		}
-		builder.append(String.format("visisble enemies:%s, ", allVisibleEnemyUnits().size()));
+		builder.append(String.format("visible enemies:%s, ", allVisibleEnemyUnits().size()));
 //		builder.append(String.format("lastCommands:%s, ", Util.toString(lastCommandByUnit)));
 		builder.append(String.format("minerals:%d, ", totalMinerals));
 		builder.append(String.format("gas:%d, ", totalGas));
@@ -305,6 +307,8 @@ public class Perception {
 	
 	public Set<Unit> getCompletedZerglingSpawingPool() {
 		Set<Unit> spawningPools = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Spawning_Pool.ordinal());
+
+		
 		for (Unit spawningPool : spawningPools) {
 			if (!spawningPool.isCompleted()) {
 				spawningPools.remove(spawningPool);
