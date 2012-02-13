@@ -14,6 +14,7 @@ public class Strategy {
 
 	public States consumeState = States.MORPH_DRONES;
 	public States produceState = States.SPAWN_OVERLORDS;
+	public States actionState = States.PAUSE;
 
 	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
@@ -25,7 +26,7 @@ public class Strategy {
 
 	/** FSM States */
 	public enum States {
-		MORPH_DRONES, SPAWN_POOLS, SPAWN_OVERLORDS, SPAWN_ZERGLINS, PAUSE, ATTACK, PATROL
+		MORPH_DRONES, SPAWN_POOLS, SPAWN_OVERLORDS, SPAWN_ZERGLINS, PAUSE, ATTACK, PATROL, DEFEND
 	};
 
 	public static Strategy instance;
@@ -36,7 +37,7 @@ public class Strategy {
 	}
 
 	public void updateFSM() {
-		States lastConsumeState = consumeState, lastProduceState = produceState;
+		States lastConsumeState = consumeState, lastProduceState = produceState, lastActionState = actionState;
 
 		if (Perception.instance.totalMinerals >= 50
 				&& !Perception.instance.morphedDrone) {
@@ -61,10 +62,10 @@ public class Strategy {
 			produceState = States.PAUSE;
 		}
 		if (enoughZerglings()) {
-			produceState = States.PATROL;
+			actionState = States.PATROL;
 		}
 		if (enemyLocated()) {
-			produceState = States.ATTACK;
+			actionState = States.ATTACK;
 		}
 		
 		//System.out.println("Current State produce state: " + produceState.toString());
@@ -134,7 +135,12 @@ public class Strategy {
 			spawnZerglings();
 			break;
 			
-			
+		default:
+			break;
+		}
+		
+		switch (actionState) {
+		
 		case PATROL:
 			patrol();
 			break;
@@ -143,11 +149,20 @@ public class Strategy {
 			attack();
 			break;
 			
-
+		case DEFEND:
+			defend();
+			break;
+			
+			
 		default:
 			break;
 		}
 
+	}
+
+	private void defend() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void patrol() {
