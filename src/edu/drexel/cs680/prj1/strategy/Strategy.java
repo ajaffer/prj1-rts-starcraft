@@ -67,7 +67,7 @@ public class Strategy {
 			produceState = States.ATTACK;
 		}
 		
-		System.out.println("Current State produce state: " + produceState.toString());
+		//System.out.println("Current State produce state: " + produceState.toString());
 
 //		if (!lastConsumeState.equals(consumeState)) {
 //			System.out.println(String.format("Consume State>>>%s<<<",
@@ -158,34 +158,42 @@ public class Strategy {
 		System.out.println("Sending patrol!!!");
 		int[] destCoordinates;
 		destCoordinates = new int[2];
-		destCoordinates = GiveOrders.instance.sendPatrol(patrolers);
+//		destCoordinates = GiveOrders.instance.sendPatrol(patrolers);
+		GiveOrders.instance.sendPatrol(patrolers);
 		
-		//while(!enemyLocated())
-		while(!located)
-		{
-			for(Unit u: patrolers)
-				if(u.isMoving())
-					continue;
-				else
-				{
-					for(Unit e: bwapi.getEnemyUnits())
-							if(distance(destCoordinates[0],destCoordinates[1],e.getX(),e.getY())<5)
-							{
-								located=true;
-								break;
-								
-							}
-					
-					
-					
-				}
-		}
-		
-		if(located)
-			attack();
-		else
-			returnToBase();
-		
+//		//while(!enemyLocated())
+//		while(!located)
+//		{
+//			for(Unit u: patrolers)
+//				if(u.isMoving())
+//					continue;
+//				else
+//				{
+//					for(Unit e: bwapi.getEnemyUnits())
+//							if(distance(destCoordinates[0],destCoordinates[1],e.getX(),e.getY())<5)
+//							{
+//								located=true;
+//								break;
+//								
+//							}
+//					
+//					
+//					
+//				}
+//		}
+//		
+//		if(located)
+//		{
+//			Set<Unit> seenEnemies = null;
+//			for(Unit e: bwapi.getEnemyUnits())
+//				if(distance(destCoordinates[0],destCoordinates[1],e.getX(),e.getY())<5)
+//					seenEnemies.add(e);
+//			
+//			GiveOrders.instance.attackSpecific(patrolers, seenEnemies);
+//		}			
+//		else
+//			GiveOrders.instance.returnToBase(patrolers);
+//		
 	}
 	
 	private double distance(int x1, int y1, int x2, int y2)
@@ -200,6 +208,8 @@ public class Strategy {
 		System.out.println("Total Zerglings used " + idleZerglings.size());
 		return idleZerglings;
 	}
+	
+	
 
 	private void attack() {
 		// TODO implement the following stubs

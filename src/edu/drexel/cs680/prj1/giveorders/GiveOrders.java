@@ -105,6 +105,17 @@ public class GiveOrders {
 			}
 		}
 	}
+	
+	public void attackSpecific(Set<Unit> allIdleZerglings, Set<Unit> allEnemyUnits) {
+		for (Unit unit : allIdleZerglings) {
+			for (Unit enemy : allEnemyUnits) {
+				System.out.println(String.format("Attack Enemy Unit#>>>%d<<<",
+						unit.getID()));
+				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
+				break;
+			}
+		}
+	}
 
 	public void morpToDrones(Set<Unit> larvae) {
 		if (larvae==null) {
@@ -176,7 +187,7 @@ public class GiveOrders {
 		
 	}
 
-	public int[] sendPatrol(Set<Unit> patrolers) {
+	public void sendPatrol(Set<Unit> patrolers) {
 		// TODO Auto-generated method stub
 		// send to random area in the map that is walkable
 		System.out.println("Figuring out patrol route...");
@@ -185,38 +196,66 @@ public class GiveOrders {
 		mapX = bwapi.getMap().getWidth();
 		mapY = bwapi.getMap().getHeight();
 		
+		System.out.println("Map is x: " + mapX);
+		System.out.println("by y: " + mapY);
+		
 		mapX = Math.round(mapX/2);
 		mapY = Math.round(mapY/2);
+		
+		System.out.println("Starting patrol at x: " + mapX);
+		System.out.println("by y: " + mapY);
 		
 		// check if that part of the map is traversable
 		// otherwise find a different area
 		
-		int step=(int) (Math.random()*10);
+		int randomX, randomY = 0;
+		randomX = (int) (mapX+Math.random()*7);
+		randomX = (int) (mapY+Math.random()*7);
+		int step=(int) Math.round((Math.random()*3));
 		int dest[] = new int[2];
-		while(!bwapi.getMap().isWalkable(mapX, mapY))
-		{
-			mapX+=1;
-			if(bwapi.getMap().isWalkable(mapX, mapY))
-				break;
-			mapY+=1;
-			if(bwapi.getMap().isWalkable(mapX, mapY))
-				break;
-			
-			step++;
-			mapX-=1;
-			if(bwapi.getMap().isWalkable(mapX, mapY))
-				break;
-			mapY-=1;
-			if(bwapi.getMap().isWalkable(mapX, mapY))
-				break;
-		}
+		System.out.print("Calculating destination x, y ....");
+//		while(!bwapi.getMap().isWalkable(mapX, mapY))
+//		{
+//			
+//			mapX+=1;
+//			if(bwapi.getMap().isWalkable(mapX, mapY))
+//				break;
+//			mapY+=1;
+//			if(bwapi.getMap().isWalkable(mapX, mapY))
+//				break;
+//			
+//			step++;
+//			mapX-=1;
+//			if(bwapi.getMap().isWalkable(mapX, mapY))
+//				break;
+//			mapY-=1;
+//			if(bwapi.getMap().isWalkable(mapX, mapY))
+//				break;
+//			
+//			System.out.print("....");
+//		}
 			
 			
 		for(Unit u: patrolers)
-			bwapi.move(u.getID(), mapX, mapY);
+			bwapi.patrol(u.getID(), randomX, randomY);
+		//	bwapi.move(u.getID(), mapX, mapY);
 		
-		dest[0]=mapX;
-		dest[1]=mapY;
-		return dest;
+//		dest[0]=randomX;
+//		dest[1]=randomY;
+//		return dest;
+	}
+
+
+	public void returnToBase(Set<Unit> setToReturn)
+	{
+		System.out.println("Returning to base...nothing found");
+		int[] destCoordinates = new int[2];
+		
+		destCoordinates[0]=bwapi.getMyUnits().get(UnitTypes.Zerg_Hatchery.ordinal()).getX();
+		destCoordinates[1]=bwapi.getMyUnits().get(UnitTypes.Zerg_Hatchery.ordinal()).getY();
+		
+		for(Unit u: setToReturn)
+			bwapi.patrol(u.getID(), destCoordinates[0], destCoordinates[1]);
+			//bwapi.move(u.getID(), destCoordinates[0], destCoordinates[1]);
 	}
 }
