@@ -190,6 +190,9 @@ public class GiveOrders {
 	public void sendPatrol(Set<Unit> patrolers) {
 		// TODO Auto-generated method stub
 		// send to random area in the map that is walkable
+		if(Perception.instance.patrolSent==true)
+			return;
+		
 		System.out.println("Figuring out patrol route...");
 		int mapX, mapY = 0;
 		
@@ -238,6 +241,8 @@ public class GiveOrders {
 			
 		for(Unit u: patrolers)
 			bwapi.patrol(u.getID(), randomX, randomY);
+		
+		Perception.instance.patrolSent=true;
 		//	bwapi.move(u.getID(), mapX, mapY);
 		
 //		dest[0]=randomX;

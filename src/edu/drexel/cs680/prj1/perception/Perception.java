@@ -34,6 +34,7 @@ public class Perception {
 //	public int totalExtractors;
 	public int totalGas;
 	public boolean morphedDrone;
+	public boolean patrolSent;
 
 	public int poolDrone = -1;
 
@@ -68,6 +69,7 @@ public class Perception {
 		
 		totalMinerals = 0;
 		totalGas = 0;
+		patrolSent = false;
 //		totalExtractors = 0;
 //		armyDrone = 0;		// drone army is 5 Zerg Drones for gathering		
 //		armyZergling = 0;   // Zergling army is 20 Zerglings for attacking
