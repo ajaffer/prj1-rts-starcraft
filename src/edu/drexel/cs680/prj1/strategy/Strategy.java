@@ -1,10 +1,9 @@
 package edu.drexel.cs680.prj1.strategy;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
-import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
@@ -14,18 +13,22 @@ public class Strategy {
 
 	public States consumeState = States.MORPH_DRONES;
 	public States produceState = States.SPAWN_OVERLORDS;
+	public States actionState = States.PAUSE;
 
 	private static final int ENEMY_UNIT_SAFE_COUNT = 10;
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
 	private static final int MIN_SPAWNING_POOL = 1;
 	private static final int MIN_ZERGLINGS_TO_PATROL = 20;
+	private static final int MIN_ATTACKERS = 20;
+	
+	private Set<Unit>attackers;
 
 	private JNIBWAPI bwapi;
 
 	/** FSM States */
 	public enum States {
-		MORPH_DRONES, SPAWN_POOLS, SPAWN_OVERLORDS, SPAWN_ZERGLINS, PAUSE, ATTACK, PATROL
+		MORPH_DRONES, SPAWN_POOLS, SPAWN_OVERLORDS, SPAWN_ZERGLINS, PAUSE, ATTACK, PATROL, DEFEND
 	};
 
 	public static Strategy instance;
@@ -36,7 +39,7 @@ public class Strategy {
 	}
 
 	public void updateFSM() {
-		States lastConsumeState = consumeState, lastProduceState = produceState;
+		States lastConsumeState = consumeState, lastProduceState = produceState, lastActionState = actionState;
 
 		if (Perception.instance.totalMinerals >= 50
 				&& !Perception.instance.morphedDrone) {
@@ -60,28 +63,32 @@ public class Strategy {
 		} else {
 			produceState = States.PAUSE;
 		}
-		if (enoughZerglings()) {
-			produceState = States.PATROL;
-		}
-		if (enemyLocated()) {
-			produceState = States.ATTACK;
+//		if (enoughZerglings()) {
+//			actionState = States.PATROL;
+//		}
+		if (enemyLocated() && enoughAttackersAvailable()) {
+			actionState = States.ATTACK;
 		}
 		
 		//System.out.println("Current State produce state: " + produceState.toString());
 
-//		if (!lastConsumeState.equals(consumeState)) {
-//			System.out.println(String.format("Consume State>>>%s<<<",
-//					consumeState));
-//		}
-//		if (!lastProduceState.equals(produceState)) {
-//			System.out.println(String.format("Produce State>>>%s<<<",
-//					produceState));
-//		}
+		if (!lastConsumeState.equals(consumeState)) {
+			System.out.println(String.format("Consume State>>>%s<<<",
+					consumeState));
+		}
+		if (!lastProduceState.equals(produceState)) {
+			System.out.println(String.format("Produce State>>>%s<<<",
+					produceState));
+		}
+		if (!lastActionState.equals(actionState)) {
+			System.out.println(String.format("Action State>>>%s<<<",
+					produceState));
+		}
 	}
 
 	private boolean enemyLocated() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	private boolean enoughZerglings() {
@@ -134,7 +141,12 @@ public class Strategy {
 			spawnZerglings();
 			break;
 			
-			
+		default:
+			break;
+		}
+		
+		switch (actionState) {
+		
 		case PATROL:
 			patrol();
 			break;
@@ -143,11 +155,20 @@ public class Strategy {
 			attack();
 			break;
 			
-
+		case DEFEND:
+			defend();
+			break;
+			
+			
 		default:
 			break;
 		}
 
+	}
+
+	private void defend() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void patrol() {
@@ -212,6 +233,7 @@ public class Strategy {
 	
 
 	private void attack() {
+		System.out.println("Attack!!");
 		// TODO implement the following stubs
 		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
 		Set<Unit> attackers = getSomeAttackers();
@@ -230,13 +252,16 @@ public class Strategy {
 	}
 
 	private Set<Unit> getSomeAttackers() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO replace with actual implementation
+		return getSomePatrolers();
 	}
 
 	private Set<Unit> getDiscoveredEnemyUnits() {
-		// TODO Auto-generated method stub
-		return null;		
+		// TODO replace with actual implementation
+		Set<Unit> enemyUnits = new HashSet<Unit>();
+		enemyUnits.addAll( bwapi.getEnemyUnits());
+				
+		return enemyUnits;		
 	}
 
 	private void spawnZerglings() {
@@ -337,13 +362,17 @@ public class Strategy {
 	}
 
 	private boolean enoughAttackersAvailable() {
-		int drones;
-		drones = Perception.instance.setOfUnitsByType.get(
-				UnitTypes.Zerg_Drone.ordinal()).size();
-		if (drones > MIN_DRONES)
-			return true;
-		else
-			return false;
+		//TODO replace with actual implementation
+		return (attackers.size() > MIN_ATTACKERS);
+		
+		
+//		int drones;
+//		drones = Perception.instance.setOfUnitsByType.get(
+//				UnitTypes.Zerg_Drone.ordinal()).size();
+//		if (drones > MIN_DRONES)
+//			return true;
+//		else
+//			return false;
 	}
 
 	private boolean enoughBuildingsAvailable() {
