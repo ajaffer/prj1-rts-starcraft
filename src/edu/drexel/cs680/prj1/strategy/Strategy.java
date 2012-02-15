@@ -19,12 +19,18 @@ public class Strategy {
 	private static final int MIN_HATCHERIES = 5;
 	private static final int MIN_DRONES = 5;
 	private static final int MIN_SPAWNING_POOL = 1;
-	private static final int MIN_ZERGLINGS_TO_PATROL = 20;
+	private static final int MIN_ZERGLINGS_TO_PATROL = 2;
 	private static final int MIN_ATTACKERS = 20;
 	
+	public int[][] patrolMap;
+	
 	private Set<Unit>attackers;
-
+	private Set<Unit>patrolers;
+	private Set<Unit>defenders;
+ 
 	private JNIBWAPI bwapi;
+	
+	public boolean patrolOut;
 
 	/** FSM States */
 	public enum States {
@@ -36,6 +42,17 @@ public class Strategy {
 	public Strategy(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
+		
+		patrolOut = false;
+		int x, y;
+		x = Perception.instance.mapXmax;
+		y = Perception.instance.mapYmax;
+		patrolMap = new int[x+1][y+1];
+		
+		//initialize patrol map
+		for(int i=0;i<x+1;i++)
+			for(int j=0;j<y+1;j++)
+				patrolMap[i][j]=0;
 	}
 
 	public void updateFSM() {
@@ -63,9 +80,9 @@ public class Strategy {
 		} else {
 			produceState = States.PAUSE;
 		}
-//		if (enoughZerglings()) {
-//			actionState = States.PATROL;
-//		}
+		if (enoughZerglings()) {
+			actionState = States.PATROL;			
+		}		
 		if (enemyLocated() && enoughAttackersAvailable()) {
 			actionState = States.ATTACK;
 		}
@@ -88,7 +105,12 @@ public class Strategy {
 
 	private boolean enemyLocated() {
 		// TODO Auto-generated method stub
-		return true;
+		if(Perception.instance.getListOfVisibleEnemyUnitsByType().size()>0)
+		{			
+			return true;
+		}
+		else
+			return false;
 	}
 
 	private boolean enoughZerglings() {
@@ -104,8 +126,8 @@ public class Strategy {
 		if(zerglings.size()>=MIN_ZERGLINGS_TO_PATROL)
 		{
 		//	System.out.println("Enough zerglings!");
+		//	establishPatrolers();	
 			return true;
-			
 		}
 		else
 		{
@@ -171,17 +193,33 @@ public class Strategy {
 		
 	}
 
+	private void establishPatrolers()
+	{
+		patrolers = getSomePatrolers();
+	}
+	
+	private void establishAttackers()
+	{
+		attackers = getSomeAttackers();
+	}
+	
+	
 	private void patrol() {
+		//if(patrolOut==true)
+		//	return;
 		// TODO Auto-generated method stub
 		// Send out a few zerglings to different corners to locate enemy
 		boolean located = false;
-		Set<Unit> patrolers = getSomePatrolers();
+		
 		System.out.println("Sending patrol!!!");
 		int[] destCoordinates;
 		destCoordinates = new int[2];
 //		destCoordinates = GiveOrders.instance.sendPatrol(patrolers);
+	//this.establishPatrolers();
+		patrolers = getSomePatrolers();
+		System.out.println(patrolers.size() + " patrolers found");
 		GiveOrders.instance.sendPatrol(patrolers);
-		
+		patrolOut=true;
 //		//while(!enemyLocated())
 //		while(!located)
 //		{
@@ -224,20 +262,49 @@ public class Strategy {
 
 	private Set<Unit> getSomePatrolers() {
 		// TODO Auto-generated method stub
-		System.out.println("Getting patrollers...");
+		
+	//	System.out.println("Getting patrollers...");
 		Set<Unit> idleZerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
 		System.out.println("Total Zerglings used " + idleZerglings.size());
+		
 		return idleZerglings;
 	}
 	
+	public int[] getAvailablePatrolTile(){
+	// returns an available tile from the map that hasn't been patrolled yet	
 	
+		int randomX, randomY, maxX, maxY, totalTiles = 0;
+		boolean foundTile = false;
+		totalTiles = Perception.instance.mapXmax*Perception.instance.mapYmax;
+		
+		int[] dest = new int[2];
+		for(int i = 0; i<totalTiles+1;)
+		{
+			randomX = (int) (Perception.instance.mapXmax/2+(Math.random()*50-Math.random()*50));
+			randomY = (int) (Perception.instance.mapYmax/2+(Math.random()*50-Math.random()*50));
+			if(patrolMap[randomX][randomY]==0)
+			{
+				dest[0]=randomX;
+				dest[1]=randomY;
+				patrolMap[randomX][randomY]=1;
+				return dest;
+			}
+		}
+		
+		
+		//int step=(int) Math.round((Math.random()*3));
+		
+		
+		dest[0]=0;
+		dest[1]=0;
+		return dest;
+	}
 
 	private void attack() {
 		System.out.println("Attack!!");
 		// TODO implement the following stubs
-		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
-		Set<Unit> attackers = getSomeAttackers();
-		
+		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();		
+		establishAttackers();
 		GiveOrders.instance.attackEnemy(enemyUnits, attackers);
 		
 //		for (Unit unit : bwapi.getMyUnits()) {
