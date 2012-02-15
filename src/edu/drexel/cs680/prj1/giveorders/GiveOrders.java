@@ -203,7 +203,8 @@ public class GiveOrders {
 		{
 			int[] newPatrolTile = Strategy.instance.getAvailablePatrolTile();
 			//System.out.println("sending to x: " + newPatrolTile[0] + " y "+ newPatrolTile[1]);
-			bwapi.patrol(u.getID(), newPatrolTile[0], newPatrolTile[1]);
+			ExecuteOrders.instance.patrolTile(u.getID(), newPatrolTile[0], newPatrolTile[1]);
+			//bwapi.patrol(u.getID(), newPatrolTile[0], newPatrolTile[1]);
 		}
 		
 		//Perception.instance.patrolSent=true;

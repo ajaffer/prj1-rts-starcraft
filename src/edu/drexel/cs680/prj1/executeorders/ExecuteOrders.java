@@ -78,4 +78,9 @@ public class ExecuteOrders {
 	public void morphToOverlord(Unit larva) {
 		bwapi.morph(larva.getID(), UnitTypes.Zerg_Overlord.ordinal());		
 	}
+	
+	public void patrolTile(int unitID,int tileX,int tileY)
+	{
+		bwapi.patrol(unitID, tileX, tileY);
+	}
 }
