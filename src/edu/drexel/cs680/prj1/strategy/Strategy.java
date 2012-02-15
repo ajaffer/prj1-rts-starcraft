@@ -282,6 +282,7 @@ public class Strategy {
 		{
 			randomX = (int) (Perception.instance.mapXmax/2+(Math.random()*50-Math.random()*50));
 			randomY = (int) (Perception.instance.mapYmax/2+(Math.random()*50-Math.random()*50));
+						
 			if(patrolMap[randomX][randomY]==0)
 			{
 				dest[0]=randomX;

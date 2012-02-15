@@ -202,7 +202,10 @@ public class GiveOrders {
 		for(Unit u: patrolers)
 		{
 			int[] newPatrolTile = Strategy.instance.getAvailablePatrolTile();
+			//newPatrolTile[0] = 128;
+			//newPatrolTile[1] = 95;
 			//System.out.println("sending to x: " + newPatrolTile[0] + " y "+ newPatrolTile[1]);
+			System.out.println("Current position is: " + u.getX() + " y: " + u.getY());
 			ExecuteOrders.instance.patrolTile(u.getID(), newPatrolTile[0], newPatrolTile[1]);
 			//bwapi.patrol(u.getID(), newPatrolTile[0], newPatrolTile[1]);
 		}
