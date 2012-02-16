@@ -45,8 +45,10 @@ public class Strategy {
 		
 		patrolOut = false;
 		int x, y;
-		x = Perception.instance.mapXmax;
-		y = Perception.instance.mapYmax;
+		//x = Perception.instance.mapXmax;
+		//y = Perception.instance.mapYmax;
+		x = 5000;
+		y = 5000;
 		patrolMap = new int[x+1][y+1];
 		
 		//initialize patrol map
@@ -83,7 +85,12 @@ public class Strategy {
 		if (enoughZerglings()) {
 			actionState = States.PATROL;			
 		}		
-		if (enemyLocated() && enoughAttackersAvailable()) {
+		
+		//if (enemyLocated() && enoughAttackersAvailable()) {
+	//		actionState = States.ATTACK;
+//		}
+		
+		if (enemyLocated()) {
 			actionState = States.ATTACK;
 		}
 		
@@ -275,14 +282,17 @@ public class Strategy {
 	
 		int randomX, randomY, maxX, maxY, totalTiles = 0;
 		boolean foundTile = false;
-		totalTiles = Perception.instance.mapXmax*Perception.instance.mapYmax;
-		
+		//totalTiles = Perception.instance.mapXmax*Perception.instance.mapYmax;
+		totalTiles = 5000*5000;
 		int[] dest = new int[2];
 		for(int i = 0; i<totalTiles+1;)
 		{
-			randomX = (int) (Perception.instance.mapXmax/2+(Math.random()*50-Math.random()*50));
-			randomY = (int) (Perception.instance.mapYmax/2+(Math.random()*50-Math.random()*50));
-						
+			//randomX = (int) (Perception.instance.mapXmax/2+(Math.random()*50-Math.random()*50));
+			//randomY = (int) (Perception.instance.mapYmax/2+(Math.random()*50-Math.random()*50));
+		
+			randomX = (int) Math.round(Math.random()*10000);
+			randomY = (int) Math.round(Math.random()*10000);
+		
 			if(patrolMap[randomX][randomY]==0)
 			{
 				dest[0]=randomX;
