@@ -7,6 +7,7 @@ import java.util.Set;
 import edu.drexel.cs680.prj1.executeorders.ExecuteOrders;
 import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
+import edu.drexel.cs680.prj1.strategy.Strategy;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -190,64 +191,18 @@ public class GiveOrders {
 	public void sendPatrol(Set<Unit> patrolers) {
 		// TODO Auto-generated method stub
 		// send to random area in the map that is walkable
-		if(Perception.instance.patrolSent==true)
-			return;
 		
-		System.out.println("Figuring out patrol route...");
-		int mapX, mapY = 0;
 		
-		mapX = bwapi.getMap().getWidth();
-		mapY = bwapi.getMap().getHeight();
-		
-		System.out.println("Map is x: " + mapX);
-		System.out.println("by y: " + mapY);
-		
-		mapX = Math.round(mapX/2);
-		mapY = Math.round(mapY/2);
-		
-		System.out.println("Starting patrol at x: " + mapX);
-		System.out.println("by y: " + mapY);
-		
-		// check if that part of the map is traversable
-		// otherwise find a different area
-		
-		int randomX, randomY = 0;
-		randomX = (int) (mapX+Math.random()*7);
-		randomX = (int) (mapY+Math.random()*7);
-		int step=(int) Math.round((Math.random()*3));
-		int dest[] = new int[2];
-		System.out.print("Calculating destination x, y ....");
-//		while(!bwapi.getMap().isWalkable(mapX, mapY))
-//		{
-//			
-//			mapX+=1;
-//			if(bwapi.getMap().isWalkable(mapX, mapY))
-//				break;
-//			mapY+=1;
-//			if(bwapi.getMap().isWalkable(mapX, mapY))
-//				break;
-//			
-//			step++;
-//			mapX-=1;
-//			if(bwapi.getMap().isWalkable(mapX, mapY))
-//				break;
-//			mapY-=1;
-//			if(bwapi.getMap().isWalkable(mapX, mapY))
-//				break;
-//			
-//			System.out.print("....");
-//		}
-			
-			
+//		// add to Strategy ===
+					
 		for(Unit u: patrolers)
-			bwapi.patrol(u.getID(), randomX, randomY);
-		
-		Perception.instance.patrolSent=true;
-		//	bwapi.move(u.getID(), mapX, mapY);
-		
-//		dest[0]=randomX;
-//		dest[1]=randomY;
-//		return dest;
+		{
+			int[] newPatrolTile = Strategy.instance.getAvailablePatrolTile();
+			
+			ExecuteOrders.instance.patrolTile(u.getID(), newPatrolTile[0], newPatrolTile[1]);
+			//bwapi.patrol(u.getID(), newPatrolTile[0], newPatrolTile[1]);
+		}
+				
 	}
 
 

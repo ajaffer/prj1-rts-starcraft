@@ -24,6 +24,8 @@ public class Perception {
 	public Map<Integer, Set<Unit>> setOfIdleUnitsByType;
 	public Map<Integer, Set<Unit>> setOfNeutralUnitsByType;
 	
+	public int mapXmax, mapYmax;
+	
 //	public List<Unit> listOfAttackers;
 	public Map<Unit, Integer> lastCommandByUnit;
 	
@@ -63,6 +65,9 @@ public class Perception {
 		setOfIdleUnitsByType = new HashMap<Integer, Set<Unit>>();
 		setOfNeutralUnitsByType = new HashMap<Integer, Set<Unit>>();
 		
+		mapXmax = bwapi.getMap().getWidth();
+		mapYmax = bwapi.getMap().getHeight();
+				
 //		listOfAttackers = new ArrayList<Unit>();
 		lastCommandByUnit = new HashMap<Unit, Integer>();
 		claimed = new HashSet<Unit>();
