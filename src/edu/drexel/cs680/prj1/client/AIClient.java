@@ -3,7 +3,7 @@ package edu.drexel.cs680.prj1.client;
 import java.util.HashSet;
 
 import edu.drexel.cs680.prj1.executeorders.ExecuteOrders;
-import edu.drexel.cs680.prj1.executeorders.PathFinding;
+import edu.drexel.cs680.prj1.executeorders.pathfinding.PathFindingUtil;
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
 import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
@@ -34,7 +34,7 @@ public class AIClient implements BWAPIEventListener {
 	GiveOrders giveOrders;
 	
 	/** Pathfinding Module*/
-	PathFinding pathFinding;
+	PathFindingUtil pathFinding;
 
 	/** ExecuteOrders Module*/
 	private ExecuteOrders executeOrders;
@@ -95,7 +95,7 @@ public class AIClient implements BWAPIEventListener {
 		strategy = new Strategy(bwapi);
 		giveOrders = new GiveOrders(bwapi);
 		executeOrders = new ExecuteOrders(bwapi);
-		pathFinding = new PathFinding(bwapi);
+		pathFinding = new PathFindingUtil(bwapi);
 	}
 	
 	/**

@@ -1,8 +1,16 @@
 package edu.drexel.cs680.prj1.executeorders;
 
 public class Node {
+	public int g,h;
+	public int x,y;
 	public Node parent;
+	
 	public PathCoord self;
+	
+	public Node(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 	
 	public Node(PathCoord newSelf)
 	{
@@ -15,13 +23,25 @@ public class Node {
 		parent = theParent;
 	}
 	
-	public boolean isEqual(PathCoord otherCoord)
-	{
-		// determines whether two coordinates are the same or already exist
-		if((self.x==otherCoord.x)&&(self.y==otherCoord.y))
-			return true;
-		else
-			return false;
+	public boolean equals(Object o) {
+		if (o instanceof Node) {
+			Node other = (Node)o;
+			return (other.x == x && other.y == y);
+		}
+		return false;
+	}
+	
+//	public boolean isEqual(PathCoord otherCoord)
+//	{
+//		// determines whether two coordinates are the same or already exist
+//		if((self.x==otherCoord.x)&&(self.y==otherCoord.y))
+//			return true;
+//		else
+//			return false;
+//	}
+	
+	public String toString() {
+		return String.format("x:%d,y:%d,g:%d,h:%d", x, y, g, h);
 	}
 	
 	public void Notify()

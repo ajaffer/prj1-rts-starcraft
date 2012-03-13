@@ -3,6 +3,7 @@ package edu.drexel.cs680.prj1.executeorders;
 import java.util.List;
 import java.util.Set;
 
+import edu.drexel.cs680.prj1.executeorders.pathfinding.PathFindingUtil;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -28,7 +29,7 @@ public class ExecuteOrders {
 		Unit enemyCentroidUnit = getCentroidUnit(allEnemyUnits);
 		Unit zerglingCentroidUnit = getCentroidUnit(allIdleZerglings);
 
-		List<Node> pathToEnemyCentroidUnit = PathFinding.instance.findPath(
+		List<Node> pathToEnemyCentroidUnit = PathFindingUtil.instance.findPath(
 				zerglingCentroidUnit.getX(), zerglingCentroidUnit.getY(),
 				enemyCentroidUnit.getX(), enemyCentroidUnit.getY());
 
@@ -45,7 +46,7 @@ public class ExecuteOrders {
 	private void moveToLeaderThanPath(Unit zerglingCentroidUnit,
 			List<Node> pathToEnemyCentroidUnit, Set<Unit> allZerglings) {
 		for (Unit zergling : allZerglings) {
-			List<Node> pathToZerglingCentroidUnit = PathFinding.instance
+			List<Node> pathToZerglingCentroidUnit = PathFindingUtil.instance
 					.findPath(zergling.getX(), zergling.getY(),
 							zerglingCentroidUnit.getX(),
 							zerglingCentroidUnit.getY());
@@ -56,6 +57,7 @@ public class ExecuteOrders {
 
 	private void moveAlongPath(Unit zerglings,
 			List<Node> pathToEnemyCentroidUnit) {
+		System.out.println(String.format("Unit# %d has %d steps to take", zerglings.getID(), pathToEnemyCentroidUnit.size()));
 		for (Node moveTo : pathToEnemyCentroidUnit) {
 			bwapi.move(zerglings.getID(), (int) moveTo.self.x,
 					(int) moveTo.self.y);

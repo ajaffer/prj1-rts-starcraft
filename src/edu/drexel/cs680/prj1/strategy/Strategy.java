@@ -218,13 +218,13 @@ public class Strategy {
 		// Send out a few zerglings to different corners to locate enemy
 		boolean located = false;
 		
-		System.out.println("Sending patrol!!!");
+//		System.out.println("Sending patrol!!!");
 		int[] destCoordinates;
 		destCoordinates = new int[2];
 //		destCoordinates = GiveOrders.instance.sendPatrol(patrolers);
 	//this.establishPatrolers();
 		patrolers = getSomePatrolers();
-		System.out.println(patrolers.size() + " patrolers found");
+//		System.out.println(patrolers.size() + " patrolers found");
 		GiveOrders.instance.sendPatrol(patrolers);
 		patrolOut=true;
 //		//while(!enemyLocated())
@@ -272,7 +272,7 @@ public class Strategy {
 		
 	//	System.out.println("Getting patrollers...");
 		Set<Unit> idleZerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
-		System.out.println("Total Zerglings used " + idleZerglings.size());
+//		System.out.println("Total Zerglings used " + idleZerglings.size());
 		
 		return idleZerglings;
 	}

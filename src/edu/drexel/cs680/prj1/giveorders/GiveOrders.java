@@ -101,22 +101,22 @@ public class GiveOrders {
 			for (Unit enemy : allEnemyUnits) {
 				System.out.println(String.format("Attack Enemy Unit#>>>%d<<<",
 						unit.getID()));
-				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
+//				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
 				break;
 			}
 		}
 	}
 	
-	public void attackSpecific(Set<Unit> allIdleZerglings, Set<Unit> allEnemyUnits) {
-		for (Unit unit : allIdleZerglings) {
-			for (Unit enemy : allEnemyUnits) {
-				System.out.println(String.format("Attack Enemy Unit#>>>%d<<<",
-						unit.getID()));
-				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
-				break;
-			}
-		}
-	}
+//	public void attackSpecific(Set<Unit> allIdleZerglings, Set<Unit> allEnemyUnits) {
+//		for (Unit unit : allIdleZerglings) {
+//			for (Unit enemy : allEnemyUnits) {
+//				System.out.println(String.format("Attack Enemy Unit#>>>%d<<<",
+//						unit.getID()));
+//				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
+//				break;
+//			}
+//		}
+//	}
 
 	public void morpToDrones(Set<Unit> larvae) {
 		if (larvae==null) {
