@@ -3,8 +3,8 @@ package edu.drexel.cs680.prj1.client;
 import java.util.HashSet;
 
 import edu.drexel.cs680.prj1.executeorders.ExecuteOrders;
-import edu.drexel.cs680.prj1.executeorders.pathfinding.PathFindingUtil;
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
+import edu.drexel.cs680.prj1.pathfinding.PathFindingUtil;
 import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
 import edu.drexel.cs680.prj1.strategy.Strategy;

@@ -3,7 +3,7 @@ package edu.drexel.cs680.prj1.executeorders;
 import java.util.List;
 import java.util.Set;
 
-import edu.drexel.cs680.prj1.executeorders.pathfinding.PathFindingUtil;
+import edu.drexel.cs680.prj1.pathfinding.PathFindingUtil;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;

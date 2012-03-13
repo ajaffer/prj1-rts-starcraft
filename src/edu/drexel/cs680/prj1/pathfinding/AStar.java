@@ -1,4 +1,4 @@
-package edu.drexel.cs680.prj1.executeorders.pathfinding;
+package edu.drexel.cs680.prj1.pathfinding;
 
 import java.util.ArrayList;
 import java.util.Comparator;
