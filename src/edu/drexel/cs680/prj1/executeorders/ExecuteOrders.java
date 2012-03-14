@@ -29,12 +29,15 @@ public class ExecuteOrders {
 		Unit enemyCentroidUnit = getCentroidUnit(allEnemyUnits);
 		Unit zerglingCentroidUnit = getCentroidUnit(allIdleZerglings);
 
+		System.out.println(String.format("Move Zerg Unit# %d at %d:%d",
+				zerglingCentroidUnit.getID(), zerglingCentroidUnit.getX(), zerglingCentroidUnit.getY()));
+
 		List<Node> pathToEnemyCentroidUnit = PathFindingUtil.instance.findPath(
 				zerglingCentroidUnit.getX(), zerglingCentroidUnit.getY(),
 				enemyCentroidUnit.getX(), enemyCentroidUnit.getY());
 
-		System.out.println(String.format("Move close to enemy Unit# >>>%d<<<",
-				enemyCentroidUnit.getID()));
+		System.out.println(String.format("Move close to enemy Unit# %d at %d:%d",
+				enemyCentroidUnit.getID(), enemyCentroidUnit.getX(), enemyCentroidUnit.getY()));
 		moveAlongPath(zerglingCentroidUnit, pathToEnemyCentroidUnit);
 
 		allIdleZerglings.remove(zerglingCentroidUnit);

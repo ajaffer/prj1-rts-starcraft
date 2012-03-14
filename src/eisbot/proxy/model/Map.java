@@ -15,7 +15,7 @@ public class Map {
 	private String hash;
 	private int[] heightMap;
 	private boolean[] buildable;
-	private boolean[] walkable;
+	public boolean[] walkable;
 	
 	private ArrayList<Region> regions = new ArrayList<Region>();
 	private ArrayList<ChokePoint> chokePoints = new ArrayList<ChokePoint>();

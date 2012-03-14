@@ -80,41 +80,42 @@ public class AStar implements PathFinding {
 		return path;
 	}
 	
+	private enum Direction {up, down, right, left};
+	private Node getNode(Node n,  Direction d) {
+		Node node = null;
+		
+		for (int i=1; i<4; i++) {
+			int x = d==Direction.right?n.x+i:d==Direction.left?n.x-i:n.x;
+			int y = d==Direction.down?n.y+i:d==Direction.up?n.y-i:n.y;
+			if (bwapi.getMap().isWalkable(x, y)) {
+				System.out.println(String.format("great %d, %d is walkable!", x, y));
+				node = new Node(x, y);
+				return node;
+			} else {
+				System.out.println(String.format("oops %d, %d is NOT walkable!", x, y));
+				
+			}
+		}
+		return node;
+	}
+	
 	private List<Node> getChildren(Node n) {
 		List<Node> children = new ArrayList<Node>();
-
-		int x = n.x+8, y = n.y;
-		if (bwapi.getMap().isWalkable(x, y)) {
-			Node nodeRight = new Node(x, y);
-			children.add(nodeRight);
-		}else {
-//			System.out.println(String.format("Not walkable: %d,%d", n.x+1, n.y));
-		}
 		
-		x = n.x-8; y = n.y;
-		if (bwapi.getMap().isWalkable(x, y)) {
-			Node nodeLeft = new Node(x, y);
-			children.add(nodeLeft);
-		} else {		
-//			System.out.println(String.format("Not walkable: %d,%d", n.x-1, n.y));
+//		System.out.println("here....");
+//		System.out.println(String.format("width %d", bwapi.getMap().getWidth()));
+//		System.out.println(String.format("height %d", bwapi.getMap().getHeight()));
+//		System.out.println(String.format("walk width %d", bwapi.getMap().getWalkWidth()));
+//		System.out.println(String.format("walk height %d", bwapi.getMap().getWalkHeight()));
+//		System.out.println("here end....");
+	
+		for (Direction d : Direction.values()) {
+			Node node = getNode(n, d);
+			if (node!=null) {
+				children.add(node);
+			}
 		}
 
-		x = n.x; y = n.y-8;
-		if (bwapi.getMap().isWalkable(x, y)) {
-			Node nodeUp = new Node(x, y);
-			children.add(nodeUp);
-		} else {		
-//			System.out.println(String.format("Not walkable: %d,%d", n.x, n.y-1));
-		}
-
-		x = n.x; y = n.y+8;
-		if (bwapi.getMap().isWalkable(x, y)) {
-			Node nodeDown = new Node(x, y);
-			children.add(nodeDown);
-		} else {		
-//			System.out.println(String.format("Not walkable: %d,%d", n.x, n.y+1));
-		}		
-		
 		if(children.size()>0) {
 			System.out.println(String.format("Node %s has %d children", n, children.size()));
 		} else {
