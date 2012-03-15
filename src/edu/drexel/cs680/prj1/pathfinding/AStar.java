@@ -87,7 +87,9 @@ public class AStar implements PathFinding {
 		for (int i=1; i<4; i++) {
 			int x = d==Direction.right?n.x+i:d==Direction.left?n.x-i:n.x;
 			int y = d==Direction.down?n.y+i:d==Direction.up?n.y-i:n.y;
-			if (bwapi.getMap().isWalkable(x, y)) {
+			
+			// testing new op here
+			if (bwapi.getMap().isWalkable(x, y)) {			
 				System.out.println(String.format("great %d, %d is walkable!", x, y));
 				node = new Node(x, y);
 				return node;
