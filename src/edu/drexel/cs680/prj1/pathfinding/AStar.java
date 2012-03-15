@@ -1,10 +1,13 @@
 package edu.drexel.cs680.prj1.pathfinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import edu.drexel.cs680.prj1.executeorders.Node;
 import eisbot.proxy.JNIBWAPI;
@@ -52,13 +55,13 @@ public class AStar implements PathFinding {
 			closed.add(n);
 //			System.out.println(String.format("closed list size: %d", closed.size()));
 			List<Node> children = getChildren(n);
-			children.removeAll(closed);
+//			children.removeAll(closed);
 //			System.out.println(String.format("found %d children", children.size()));
 			for (Node m : children) {
-				m.parent = n;
-				m.g = n.g + 1;
-				m.h = heuristic(m);
 				if(!closed.contains(m)) { // added check to determine if node closed
+					m.parent = n;
+					m.g = n.g + 1;
+					m.h = heuristic(m);
 					open.add(m);
 				}
 			}
@@ -70,7 +73,7 @@ public class AStar implements PathFinding {
 	}
 	
 	private int heuristic(Node m) {
-		int h = (Math.abs(m.x - goal.x) + Math.abs(m.y = goal.y));
+		int h = (Math.abs(m.x - goal.x) + Math.abs(m.y - goal.y));
 		return h;
 	}
 	
@@ -81,6 +84,7 @@ public class AStar implements PathFinding {
 			path.add(n);
 			n = n.parent;
 		}
+		Collections.reverse(path);
 		return path;
 	}
 	
@@ -88,7 +92,7 @@ public class AStar implements PathFinding {
 	private Node getNode(Node n,  Direction d) {
 		Node node = null;
 		
-		for (int i=1; i<4; i++) {
+		for (int i=1; i<2; i++) {
 			int x = d==Direction.right?n.x+i:d==Direction.left?n.x-i:n.x;
 			int y = d==Direction.down?n.y+i:d==Direction.up?n.y-i:n.y;
 			
@@ -106,7 +110,7 @@ public class AStar implements PathFinding {
 	}
 	
 	private List<Node> getChildren(Node n) {
-		List<Node> children = new ArrayList<Node>();
+		List<Node> children = new ArrayList<Node>();	
 		
 //		System.out.println("here....");
 //		System.out.println(String.format("width %d", bwapi.getMap().getWidth()));
@@ -123,7 +127,7 @@ public class AStar implements PathFinding {
 		}
 
 		if(children.size()>0) {
-			System.out.println(String.format("Node %s has %d children", n, children.size()));
+//			System.out.println(String.format("Node %s has %d children", n, children.size()));
 		} else {
 			System.out.println(String.format("Node %s has NO children", n));
 		}

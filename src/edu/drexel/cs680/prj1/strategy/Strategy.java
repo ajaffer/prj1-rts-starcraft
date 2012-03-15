@@ -1,12 +1,15 @@
 package edu.drexel.cs680.prj1.strategy;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
+import edu.drexel.cs680.prj1.executeorders.Node;
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
+import edu.drexel.cs680.prj1.pathfinding.PathFindingUtil;
 import edu.drexel.cs680.prj1.perception.Perception;
 import eisbot.proxy.JNIBWAPI;
-import eisbot.proxy.model.Map;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
 
@@ -21,13 +24,14 @@ public class Strategy {
 	private static final int MIN_DRONES = 5;
 	private static final int MIN_SPAWNING_POOL = 1;
 	private static final int MIN_ZERGLINGS_TO_PATROL = 2;
-	private static final int MIN_ATTACKERS = 20;
+	private static final int MIN_ATTACKERS = 5;
+	private static final int MIN_PATROLLERS = 10;
 	
 	public int[][] patrolMap;
 	
 	private Set<Unit>attackers;
 	private Set<Unit>patrolers;
-	private Set<Unit>defenders;
+//	private Set<Unit>defenders;
  
 	private JNIBWAPI bwapi;
 	
@@ -44,6 +48,9 @@ public class Strategy {
 		instance = this;
 		this.bwapi = bwapi;
 		
+		patrolers = new HashSet<Unit>();
+		attackers = new HashSet<Unit>();
+		
 		patrolOut = false;
 		int x, y;
 		//x = Perception.instance.mapXmax;
@@ -56,6 +63,7 @@ public class Strategy {
 		for(int i=0;i<x+1;i++)
 			for(int j=0;j<y+1;j++)
 				patrolMap[i][j]=0;
+		
 	}
 
 	public void updateFSM() {
@@ -83,13 +91,9 @@ public class Strategy {
 		} else {
 			produceState = States.PAUSE;
 		}
-		if (enoughZerglings()) {
+		if (patrolers!=null && !patrolers.isEmpty()) {
 			actionState = States.PATROL;			
 		}		
-		
-		//if (enemyLocated() && enoughAttackersAvailable()) {
-	//		actionState = States.ATTACK;
-//		}
 		
 		if (enemyLocated()) {
 			actionState = States.ATTACK;
@@ -107,40 +111,7 @@ public class Strategy {
 		}
 		if (!lastActionState.equals(actionState)) {
 			System.out.println(String.format("Action State>>>%s<<<",
-					produceState));
-		}
-	}
-
-	private boolean enemyLocated() {
-		// TODO Auto-generated method stub
-		if(Perception.instance.getListOfVisibleEnemyUnitsByType().size()>0)
-		{			
-			return true;
-		}
-		else
-			return false;
-	}
-
-	private boolean enoughZerglings() {
-		// TODO Auto-generated method stub
-		
-		
-		Set<Unit> zerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
-		if(zerglings==null)
-		{			
-			return false;
-		}
-		
-		if(zerglings.size()>=MIN_ZERGLINGS_TO_PATROL)
-		{
-		//	System.out.println("Enough zerglings!");
-		//	establishPatrolers();	
-			return true;
-		}
-		else
-		{
-	//		System.out.println("No t Enough zerglings!");
-			return false;
+					actionState));
 		}
 	}
 
@@ -164,11 +135,39 @@ public class Strategy {
 //		}
 	}
 	
+	private Random r = new Random();
+	
+	private void astarTest(){
+		Set<Unit> drones = Perception.instance.setOfIdleUnitsByType.get(UnitTypes.Zerg_Drone.ordinal());
+		if (drones!=null) {
+			Unit drone = drones.toArray(new Unit[0])[r.nextInt(drones.size())];
+//			Unit drone2 = drones.toArray(new Unit[0])[2];
+			List<Unit> enemies = bwapi.getEnemyUnits();
+			if (enemies!=null && !enemies.isEmpty()) {
+				Unit enemy = enemies.get(r.nextInt(enemies.size()));
+//				List<Node> path = PathFindingUtil.instance.findPath(drone.getTileX(), drone.getTileY(), enemy.getTileX(), enemy.getTileY());
+				List<Node> path = PathFindingUtil.instance.findPath(drone.getTileX(), drone.getTileY(), 101, 17);
+				
+				if (path!=null) {
+					System.out.println("Ging to look for enemy type " + enemy.getTypeID());
+					for (Node moveTo : path) {			
+						System.out.println(String.format("moving to %d,%d", moveTo.x, moveTo.y));
+						bwapi.move(drone.getID(), (int) moveTo.x,
+								(int) moveTo.y);
+					}
+				}
+			}
+		}
+	}
+	
 	public void apply() {
 //		displayMapWalkable();
-		
+		establishPatrolers();
+		establishAttackers();
 		claimMinerals();
-
+//		patrol();
+//		astarTest();
+		
 		switch (consumeState) {
 
 		case MORPH_DRONES:
@@ -225,64 +224,39 @@ public class Strategy {
 
 	private void establishPatrolers()
 	{
-		patrolers = getSomePatrolers();
+		if (patrolers.size() < MIN_PATROLLERS) {
+//			Set<Unit> overlords = Perception.instance.setOfIdleUnitsByType.get(UnitTypes.Zerg_Overlord.ordinal());
+//			if (overlords!=null) {
+//				patrolers.addAll(overlords);
+//			}
+
+			Set<Unit> zerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
+			if (zerglings!=null && zerglings.size() >= MIN_PATROLLERS) {
+				patrolers.addAll(zerglings);
+				System.out.println(String.format("patrolers:%d", patrolers.size()));
+			}
+		}		
 	}
 	
 	private void establishAttackers()
 	{
-		attackers = getSomeAttackers();
+		if (!(patrolers.isEmpty())) {
+			Set<Unit> idleZerglings = Perception.instance.setOfIdleUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
+
+			if (idleZerglings != null) {
+				idleZerglings.removeAll(patrolers);
+				idleZerglings.removeAll(attackers);
+				attackers.addAll(idleZerglings);
+//				System.out.println(String.format("attackers:%d", attackers.size()));
+			}
+		}
 	}
 	
 	
 	private void patrol() {
-		//if(patrolOut==true)
-		//	return;
-		// TODO Auto-generated method stub
-		// Send out a few zerglings to different corners to locate enemy
-		boolean located = false;
-		
 //		System.out.println("Sending patrol!!!");
-		int[] destCoordinates;
-		destCoordinates = new int[2];
-//		destCoordinates = GiveOrders.instance.sendPatrol(patrolers);
-	//this.establishPatrolers();
-		patrolers = getSomePatrolers();
-//		System.out.println(patrolers.size() + " patrolers found");
 		GiveOrders.instance.sendPatrol(patrolers);
 		patrolOut=true;
-//		//while(!enemyLocated())
-//		while(!located)
-//		{
-//			for(Unit u: patrolers)
-//				if(u.isMoving())
-//					continue;
-//				else
-//				{
-//					for(Unit e: bwapi.getEnemyUnits())
-//							if(distance(destCoordinates[0],destCoordinates[1],e.getX(),e.getY())<5)
-//							{
-//								located=true;
-//								break;
-//								
-//							}
-//					
-//					
-//					
-//				}
-//		}
-//		
-//		if(located)
-//		{
-//			Set<Unit> seenEnemies = null;
-//			for(Unit e: bwapi.getEnemyUnits())
-//				if(distance(destCoordinates[0],destCoordinates[1],e.getX(),e.getY())<5)
-//					seenEnemies.add(e);
-//			
-//			GiveOrders.instance.attackSpecific(patrolers, seenEnemies);
-//		}			
-//		else
-//			GiveOrders.instance.returnToBase(patrolers);
-//		
 	}
 	
 	private double distance(int x1, int y1, int x2, int y2)
@@ -290,13 +264,8 @@ public class Strategy {
 		return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
 	}
 
-	private Set<Unit> getSomePatrolers() {
-		// TODO Auto-generated method stub
-		
-	//	System.out.println("Getting patrollers...");
+	private Set<Unit> getIdleZerglings() {
 		Set<Unit> idleZerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
-//		System.out.println("Total Zerglings used " + idleZerglings.size());
-		
 		return idleZerglings;
 	}
 	
@@ -335,11 +304,11 @@ public class Strategy {
 	}
 
 	private void attack() {
-		System.out.println("Attack!!");
-		// TODO implement the following stubs
-		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();		
-		establishAttackers();
-		GiveOrders.instance.attackEnemy(enemyUnits, attackers);
+		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
+		if (enemyUnits != null) {
+			System.out.println(String.format("Attack %d enemies!!", enemyUnits.size()));
+			GiveOrders.instance.attackEnemy(enemyUnits, attackers);
+		}
 		
 //		for (Unit unit : bwapi.getMyUnits()) {
 //			if (unit.getTypeID() == UnitTypes.Zerg_Zergling.ordinal()
@@ -352,15 +321,37 @@ public class Strategy {
 //		}
 	}
 
-	private Set<Unit> getSomeAttackers() {
-		// TODO replace with actual implementation
-		return getSomePatrolers();
+	private int[] enemyTypes = new int[]{UnitTypes.Zerg_Hatchery.ordinal(), UnitTypes.Zerg_Hydralisk.ordinal(), 
+			UnitTypes.Zerg_Hydralisk_Den.ordinal(), UnitTypes.Zerg_Drone.ordinal(), UnitTypes.Zerg_Egg.ordinal(),
+			UnitTypes.Zerg_Overlord.ordinal()};
+
+	private boolean enemyLocated() {
+
+		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
+		if (listOfVisibleEnemyUnitsByType!=null) {
+			for (int enemyType : enemyTypes) {
+				List<Unit> enemies = listOfVisibleEnemyUnitsByType.get(enemyType);
+				if (enemies != null) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
+	
 	private Set<Unit> getDiscoveredEnemyUnits() {
-		// TODO replace with actual implementation
 		Set<Unit> enemyUnits = new HashSet<Unit>();
-		enemyUnits.addAll( bwapi.getEnemyUnits());
+		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
+		if (listOfVisibleEnemyUnitsByType!=null) {
+			for (int enemyType : enemyTypes) {
+				List<Unit> enemies = listOfVisibleEnemyUnitsByType.get(enemyType);
+				if (enemies != null) {
+					enemyUnits.addAll(enemies);
+				}
+			}
+		}
 				
 		return enemyUnits;		
 	}
@@ -463,19 +454,8 @@ public class Strategy {
 	}
 
 	private boolean enoughAttackersAvailable() {
-		//TODO replace with actual implementation
 		return (attackers.size() > MIN_ATTACKERS);
-		
-		
-//		int drones;
-//		drones = Perception.instance.setOfUnitsByType.get(
-//				UnitTypes.Zerg_Drone.ordinal()).size();
-//		if (drones > MIN_DRONES)
-//			return true;
-//		else
-//			return false;
 	}
-
 	private boolean enoughBuildingsAvailable() {
 		/**
 		 * TODO Please use an appropriate Zerg Building type, I just Chose
