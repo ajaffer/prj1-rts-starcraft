@@ -58,7 +58,8 @@ public class AStar implements PathFinding {
 				m.parent = n;
 				m.g = n.g + 1;
 				m.h = heuristic(m);
-				open.add(m);
+				if(!closed.contains(m)) // added check to determine if node closed
+					open.add(m);
 			}
 		}
 		
