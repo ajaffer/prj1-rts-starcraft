@@ -41,27 +41,30 @@ public class AStar implements PathFinding {
 		System.out.println(String.format("Starting AStar, start: %s, goal: %s", start, goal));
 		List<Node> path = null;
 		while (!open.isEmpty()) {
-			System.out.println(String.format("open list size: %d", open.size()));
+//			System.out.println(String.format("open list size: %d", open.size()));
 			Node n = open.remove();
-			System.out.println(String.format("Removed Node: %s", n));
+//			System.out.println(String.format("Removed Node: %s", n));
 			if (n.equals(goal)){
 				System.out.println("Found Goal!");
 				path = getPath(n);
 				return path;
 			}
 			closed.add(n);
-			System.out.println(String.format("closed list size: %d", closed.size()));
+//			System.out.println(String.format("closed list size: %d", closed.size()));
 			List<Node> children = getChildren(n);
 			children.removeAll(closed);
-			System.out.println(String.format("found %d children", children.size()));
+//			System.out.println(String.format("found %d children", children.size()));
 			for (Node m : children) {
 				m.parent = n;
 				m.g = n.g + 1;
 				m.h = heuristic(m);
-				if(!closed.contains(m)) // added check to determine if node closed
+				if(!closed.contains(m)) { // added check to determine if node closed
 					open.add(m);
+				}
 			}
 		}
+		
+		System.out.println("Goal not found!");
 		
 		return path;
 	}
@@ -91,11 +94,11 @@ public class AStar implements PathFinding {
 			
 			// testing new op here
 			if (bwapi.getMap().isWalkable(x, y)) {			
-				System.out.println(String.format("great %d, %d is walkable!", x, y));
+//				System.out.println(String.format("great %d, %d is walkable!", x, y));
 				node = new Node(x, y);
 				return node;
 			} else {
-				System.out.println(String.format("oops %d, %d is NOT walkable!", x, y));
+//				System.out.println(String.format("oops %d, %d is NOT walkable!", x, y));
 				
 			}
 		}

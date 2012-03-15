@@ -5,22 +5,9 @@ public class Node {
 	public int x,y;
 	public Node parent;
 	
-	public PathCoord self;
-	
 	public Node(int x, int y) {
 		this.x = x;
 		this.y = y;
-	}
-	
-	public Node(PathCoord newSelf)
-	{
-		self = newSelf;
-		parent = null;
-	}
-	public Node(PathCoord newSelf, Node theParent)
-	{
-		self = newSelf;
-		parent = theParent;
 	}
 	
 	public boolean equals(Object o) {
@@ -30,23 +17,8 @@ public class Node {
 		}
 		return false;
 	}
-	
-//	public boolean isEqual(PathCoord otherCoord)
-//	{
-//		// determines whether two coordinates are the same or already exist
-//		if((self.x==otherCoord.x)&&(self.y==otherCoord.y))
-//			return true;
-//		else
-//			return false;
-//	}
-	
+
 	public String toString() {
 		return String.format("x:%d,y:%d,g:%d,h:%d", x, y, g, h);
 	}
-	
-	public void Notify()
-	{
-		System.out.println("using coordinates x: " + self.x + " and y: " + self.y);
-	}
-
 }

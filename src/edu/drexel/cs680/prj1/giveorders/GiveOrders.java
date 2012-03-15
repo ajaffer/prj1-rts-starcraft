@@ -99,9 +99,9 @@ public class GiveOrders {
 	private void attack(Set<Unit> allIdleZerglings, Set<Unit> allEnemyUnits) {
 		for (Unit unit : allIdleZerglings) {
 			for (Unit enemy : allEnemyUnits) {
-				System.out.println(String.format("Attack Enemy Unit#>>>%d<<<",
+				System.out.println(String.format("Reached Enemy!!, Now Attack Enemy Unit#>>>%d<<<",
 						unit.getID()));
-//				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
+				bwapi.attack(unit.getID(), enemy.getX(), enemy.getY());
 				break;
 			}
 		}
