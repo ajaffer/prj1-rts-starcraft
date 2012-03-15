@@ -88,9 +88,9 @@ public class ExecuteOrders {
 	private void moveAlongPath(Unit zerglings,
 			List<Node> pathToEnemyCentroidUnit) {
 		System.out.println(String.format("Unit# %d has %d steps to take", zerglings.getID(), pathToEnemyCentroidUnit.size()));
-		for (Node moveTo : pathToEnemyCentroidUnit) {
-			bwapi.move(zerglings.getID(), (int) moveTo.self.x,
-					(int) moveTo.self.y);
+		for (Node moveTo : pathToEnemyCentroidUnit) {			
+			bwapi.move(zerglings.getID(), (int) moveTo.self.x*4,
+					(int) moveTo.self.y*4);
 		}
 	}
 
