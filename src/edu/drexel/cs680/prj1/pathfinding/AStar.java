@@ -14,14 +14,14 @@ import eisbot.proxy.JNIBWAPI;
 
 public class AStar implements PathFinding {
 	
-	private Queue<Node> open;
-	private List<Node> closed;
-	private Node goal;
-	private Node start;
+	Queue<Node> open;
+	List<Node> closed;
+	Node goal;
+	Node start;
 	
-	private JNIBWAPI bwapi;
+	JNIBWAPI bwapi;
 	
-	private void init(Node start, Node goal, JNIBWAPI bwapi) {
+	void init(Node start, Node goal, JNIBWAPI bwapi) {
 		Comparator<Node> comparator = new Comparator<Node>() {
 			@Override
 			public int compare(Node o1, Node o2) {
@@ -72,12 +72,12 @@ public class AStar implements PathFinding {
 		return path;
 	}
 	
-	private int heuristic(Node m) {
+	int heuristic(Node m) {
 		int h = (Math.abs(m.x - goal.x) + Math.abs(m.y - goal.y));
 		return h;
 	}
 	
-	private List<Node> getPath(Node n) {
+	List<Node> getPath(Node n) {
 		List<Node> path = new ArrayList<Node>();
 		
 		while(n.parent!=null){
@@ -88,8 +88,8 @@ public class AStar implements PathFinding {
 		return path;
 	}
 	
-	private enum Direction {up, down, right, left};
-	private Node getNode(Node n,  Direction d) {
+	enum Direction {up, down, right, left};
+	Node getNode(Node n,  Direction d) {
 		Node node = null;
 		
 		for (int i=1; i<2; i++) {
@@ -109,7 +109,7 @@ public class AStar implements PathFinding {
 		return node;
 	}
 	
-	private List<Node> getChildren(Node n) {
+	List<Node> getChildren(Node n) {
 		List<Node> children = new ArrayList<Node>();	
 		
 //		System.out.println("here....");

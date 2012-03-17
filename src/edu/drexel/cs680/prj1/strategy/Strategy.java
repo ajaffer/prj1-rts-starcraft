@@ -326,34 +326,36 @@ public class Strategy {
 			UnitTypes.Zerg_Overlord.ordinal()};
 
 	private boolean enemyLocated() {
+		return Perception.instance.allVisibleEnemyUnits().size() > 0;
+//		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
+//		if (listOfVisibleEnemyUnitsByType!=null) {
+//			for (int enemyType : enemyTypes) {
+//				List<Unit> enemies = listOfVisibleEnemyUnitsByType.get(enemyType);
+//				if (enemies != null) {
+//					return true;
+//				}
+//			}
+//		}
 
-		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
-		if (listOfVisibleEnemyUnitsByType!=null) {
-			for (int enemyType : enemyTypes) {
-				List<Unit> enemies = listOfVisibleEnemyUnitsByType.get(enemyType);
-				if (enemies != null) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+//		return false;
 	}
 
 	
 	private Set<Unit> getDiscoveredEnemyUnits() {
-		Set<Unit> enemyUnits = new HashSet<Unit>();
-		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
-		if (listOfVisibleEnemyUnitsByType!=null) {
-			for (int enemyType : enemyTypes) {
-				List<Unit> enemies = listOfVisibleEnemyUnitsByType.get(enemyType);
-				if (enemies != null) {
-					enemyUnits.addAll(enemies);
-				}
-			}
-		}
+		return Perception.instance.allVisibleEnemyUnits();
+		
+//		Set<Unit> enemyUnits = new HashSet<Unit>();
+//		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
+//		if (listOfVisibleEnemyUnitsByType!=null) {
+//			for (int enemyType : enemyTypes) {
+//				List<Unit> enemies = listOfVisibleEnemyUnitsByType.get(enemyType);
+//				if (enemies != null) {
+//					enemyUnits.addAll(enemies);
+//				}
+//			}
+//		}
 				
-		return enemyUnits;		
+//		return enemyUnits;		
 	}
 
 	private void spawnZerglings() {

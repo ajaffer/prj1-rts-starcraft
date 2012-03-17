@@ -158,8 +158,8 @@ public class Perception {
 //	}
 			
 
-	public List<Unit> allVisibleEnemyUnits() {
-		List<Unit> enemyUnits = new ArrayList<Unit>();
+	public Set<Unit> allVisibleEnemyUnits() {
+		Set<Unit> enemyUnits = new HashSet<Unit>();
 		
 		Collection<List<Unit>> metaListOfEnemyUnits = getListOfVisibleEnemyUnitsByType().values();
 		for (List<Unit> enemies : metaListOfEnemyUnits) {
