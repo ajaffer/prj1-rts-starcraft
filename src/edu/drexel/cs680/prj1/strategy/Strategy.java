@@ -7,6 +7,7 @@ import java.util.Set;
 
 import edu.drexel.cs680.prj1.executeorders.Node;
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
+import edu.drexel.cs680.prj1.logistics.Logistics;
 import edu.drexel.cs680.prj1.pathfinding.PathFindingUtil;
 import edu.drexel.cs680.prj1.perception.Perception;
 import eisbot.proxy.JNIBWAPI;
@@ -27,9 +28,9 @@ public class Strategy {
 	private static final int MIN_ATTACKERS = 5;
 	private static final int MIN_PATROLLERS = 10;
 	
-	public int[][] patrolMap;
+//	public int[][] patrolMap;
 	
-	private Set<Unit>attackers;
+//	private Set<Unit>attackers;
 	private Set<Unit>patrolers;
 //	private Set<Unit>defenders;
  
@@ -49,20 +50,20 @@ public class Strategy {
 		this.bwapi = bwapi;
 		
 		patrolers = new HashSet<Unit>();
-		attackers = new HashSet<Unit>();
+//		attackers = new HashSet<Unit>();
 		
 		patrolOut = false;
 		int x, y;
 		//x = Perception.instance.mapXmax;
 		//y = Perception.instance.mapYmax;
-		x = 5000;
-		y = 5000;
-		patrolMap = new int[x+1][y+1];
-		
-		//initialize patrol map
-		for(int i=0;i<x+1;i++)
-			for(int j=0;j<y+1;j++)
-				patrolMap[i][j]=0;
+//		x = 5000;
+//		y = 5000;
+//		patrolMap = new int[x+1][y+1];
+//		
+//		//initialize patrol map
+//		for(int i=0;i<x+1;i++)
+//			for(int j=0;j<y+1;j++)
+//				patrolMap[i][j]=0;
 		
 	}
 
@@ -91,9 +92,9 @@ public class Strategy {
 		} else {
 			produceState = States.PAUSE;
 		}
-		if (patrolers!=null && !patrolers.isEmpty()) {
-			actionState = States.PATROL;			
-		}		
+//		if (patrolers!=null && !patrolers.isEmpty()) {
+//			actionState = States.PATROL;			
+//		}		
 		
 		if (enemyLocated()) {
 			actionState = States.ATTACK;
@@ -165,7 +166,7 @@ public class Strategy {
 		establishPatrolers();
 		establishAttackers();
 		claimMinerals();
-//		patrol();
+		patrol();
 //		astarTest();
 		
 		switch (consumeState) {
@@ -198,9 +199,9 @@ public class Strategy {
 		
 		switch (actionState) {
 		
-		case PATROL:
-			patrol();
-			break;
+//		case PATROL:
+//			patrol();
+//			break;
 			
 		case ATTACK:
 			attack();
@@ -245,8 +246,9 @@ public class Strategy {
 
 			if (idleZerglings != null) {
 				idleZerglings.removeAll(patrolers);
-				idleZerglings.removeAll(attackers);
-				attackers.addAll(idleZerglings);
+//				idleZerglings.removeAll(attackers);
+				Logistics.instance.addUnits(idleZerglings);
+//				attackers.addAll(idleZerglings);
 //				System.out.println(String.format("attackers:%d", attackers.size()));
 			}
 		}
@@ -254,9 +256,16 @@ public class Strategy {
 	
 	
 	private void patrol() {
-//		System.out.println("Sending patrol!!!");
-		GiveOrders.instance.sendPatrol(patrolers);
-		patrolOut=true;
+		if (patrolOut) {
+			return;
+		}
+		
+		if (patrolers.size() >= MIN_PATROLLERS){
+			System.out.println("send patrol");
+			patrolOut=true;
+			GiveOrders.instance.sendPatrol(patrolers);
+			System.out.println("patrol was sent!!!");
+		}
 	}
 	
 	private double distance(int x1, int y1, int x2, int y2)
@@ -269,45 +278,11 @@ public class Strategy {
 		return idleZerglings;
 	}
 	
-	public int[] getAvailablePatrolTile(){
-	// returns an available tile from the map that hasn't been patrolled yet	
-	
-		int randomX, randomY, maxX, maxY, totalTiles = 0;
-		boolean foundTile = false;
-		//totalTiles = Perception.instance.mapXmax*Perception.instance.mapYmax;
-		totalTiles = 5000*5000;
-		int[] dest = new int[2];
-		for(int i = 0; i<totalTiles+1;)
-		{
-			//randomX = (int) (Perception.instance.mapXmax/2+(Math.random()*50-Math.random()*50));
-			//randomY = (int) (Perception.instance.mapYmax/2+(Math.random()*50-Math.random()*50));
-		
-			randomX = (int) Math.round(Math.random()*10000);
-			randomY = (int) Math.round(Math.random()*10000);
-		
-			if(patrolMap[randomX][randomY]==0)
-			{
-				dest[0]=randomX;
-				dest[1]=randomY;
-				patrolMap[randomX][randomY]=1;
-				return dest;
-			}
-		}
-		
-		
-		//int step=(int) Math.round((Math.random()*3));
-		
-		
-		dest[0]=0;
-		dest[1]=0;
-		return dest;
-	}
-
 	private void attack() {
 		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
-		if (enemyUnits != null) {
+		if (enemyUnits != null && !enemyUnits.isEmpty()) {
 			System.out.println(String.format("Attack %d enemies!!", enemyUnits.size()));
-			GiveOrders.instance.attackEnemy(enemyUnits, attackers);
+			GiveOrders.instance.attackEnemy(enemyUnits, Logistics.instance.getSquad());
 		}
 		
 //		for (Unit unit : bwapi.getMyUnits()) {
@@ -326,7 +301,10 @@ public class Strategy {
 			UnitTypes.Zerg_Overlord.ordinal()};
 
 	private boolean enemyLocated() {
-		return Perception.instance.allVisibleEnemyUnits().size() > 0;
+		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
+		return (enemyUnits != null && !enemyUnits.isEmpty());
+		
+//		return Perception.instance.allVisibleEnemyUnits().size() > 0;
 //		java.util.Map<Integer, List<Unit>> listOfVisibleEnemyUnitsByType = Perception.instance.getListOfVisibleEnemyUnitsByType();
 //		if (listOfVisibleEnemyUnitsByType!=null) {
 //			for (int enemyType : enemyTypes) {
@@ -456,7 +434,7 @@ public class Strategy {
 	}
 
 	private boolean enoughAttackersAvailable() {
-		return (attackers.size() > MIN_ATTACKERS);
+		return (Logistics.instance.noOfSquads() > 0);
 	}
 	private boolean enoughBuildingsAvailable() {
 		/**

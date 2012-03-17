@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import edu.drexel.cs680.prj1.logistics.Logistics;
 import edu.drexel.cs680.prj1.pathfinding.PathFindingUtil;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
@@ -28,11 +29,11 @@ public class ExecuteOrders {
 	 * unit close to the enemy's centroid 3. Moves player's other units on the
 	 * same path as the centroid unit
 	 */
-	public void moveCloseToEnemy(Set<Unit> allIdleZerglings,
+	public void moveCloseToEnemy(Logistics.Squadron squad,
 			Set<Unit> allEnemyUnits) {
 
 		Unit enemyUnit = getRandomUnit(allEnemyUnits);
-		Unit zerglingUnit = getRandomUnit(allIdleZerglings);
+		Unit zerglingUnit = getRandomUnit(squad.units);
 
 		System.out.println(String.format("Move Zerg Unit# %d at %d:%d",
 				zerglingUnit.getID(), zerglingUnit.getTileX(), zerglingUnit.getTileY()));
@@ -59,7 +60,7 @@ public class ExecuteOrders {
 //		moveAlongPath(zerglingUnit, pathToEnemyUnit);
 //		allIdleZerglings.remove(zerglingUnit);
 		
-		for (Unit zergling : allIdleZerglings) {
+		for (Unit zergling : squad.units) {
 			moveAlongPath(zergling, pathToEnemyUnit);
 		}
 	}

@@ -1,27 +1,66 @@
 package edu.drexel.cs680.prj1.logistics;
 
-import edu.drexel.cs680.prj1.perception.Perception;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import eisbot.proxy.JNIBWAPI;
+import eisbot.proxy.model.Unit;
 
 public class Logistics {
 /**
  * Used to determine whether something can be built with necessary resources
  */
-	private boolean enoughZerglings;
-	
 	public static Logistics instance;
 	public JNIBWAPI bwapi;
+	
+	private List<Squadron> sqauadrons;
+//	private List<Squadron> patrollers;
+	private Squadron currentSqaud;
+	private Set<Unit> observerdUnits;
+//	enum SqaudType {PATROL, ATTACK};
+	
+	public class Squadron {
+		public static final int MIN_SIZE = 2;
+		public Set<Unit> units;
+//		public SqaudType sqaudType;
+		
+		public Squadron(Set<Unit> units){
+			this.units = units;
+//			this.sqaudType = sqaudType;
+		}
+	}
 	
 	public Logistics(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
-		
-		enoughZerglings = false;
+		sqauadrons = new ArrayList<Squadron>();
+//		patrollers = new ArrayList<Squadron>();
+		currentSqaud = new Squadron(new HashSet<Unit>());
+		observerdUnits = new HashSet<Unit>();
 	}
 	
-	public void updateLogistics()
-	{
+	public void addUnits(Set<Unit> units) {
+		if (currentSqaud.units.size() < Squadron.MIN_SIZE){
+			units.removeAll(observerdUnits);
+			currentSqaud.units.addAll(units);
+			observerdUnits.addAll(units);
+		}
 		
+		if (currentSqaud.units.size() >= Squadron.MIN_SIZE){
+			sqauadrons.add(currentSqaud);
+			currentSqaud = new Squadron(new HashSet<Unit>());
+			System.out.println(String.format("Added Squad, total: %d", noOfSquads()));
+		}
+	}
+	
+	public Squadron getSquad(){
+		return sqauadrons.remove(0);
+	}
+	
+	public int noOfSquads() {
+		return sqauadrons.size();
 	}
 	
 }

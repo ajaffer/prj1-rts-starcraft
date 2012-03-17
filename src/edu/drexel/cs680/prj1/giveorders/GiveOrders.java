@@ -1,13 +1,13 @@
 package edu.drexel.cs680.prj1.giveorders;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import edu.drexel.cs680.prj1.executeorders.ExecuteOrders;
-import edu.drexel.cs680.prj1.perception.AgentState;
-import edu.drexel.cs680.prj1.perception.Perception;
-import edu.drexel.cs680.prj1.strategy.Strategy;
+import edu.drexel.cs680.prj1.logistics.Logistics;
 import eisbot.proxy.JNIBWAPI;
 import eisbot.proxy.model.Unit;
 import eisbot.proxy.types.UnitType.UnitTypes;
@@ -16,11 +16,18 @@ public class GiveOrders {
 
 	private JNIBWAPI bwapi;
 	public static GiveOrders instance;
+	
+	private List<PatrolLocation> patrolLocations;
+
+	private Random r;
 
 	public GiveOrders(JNIBWAPI bwapi) {
 		instance = this;
 		this.bwapi = bwapi;
+		r = new Random();
+		patrolLocations = new ArrayList<PatrolLocation>();
 	}
+	
 
 	// public void sendOrders() {
 	// if (Strategy.instance.currentState.equals(Strategy.States.Attack)) {
@@ -88,12 +95,12 @@ public class GiveOrders {
 	// Set<Unit> allIdleZerglings = Perception.instance.listOfUnitsByType
 	// .get(UnitTypes.Zerg_Zergling);
 	public void attackEnemy(Set<Unit> allEnemyUnits,
-			Set<Unit> allIdleZerglings) {
-		System.out.println(String.format("Enemy/Player:%d/%d",
-				allEnemyUnits.size(), allIdleZerglings.size()));
+			Logistics.Squadron sqaud) {
+		System.out.println(String.format("Enemy/Squad:%d/%d",
+				allEnemyUnits.size(), sqaud.units.size()));
 		ExecuteOrders.instance
-				.moveCloseToEnemy(allIdleZerglings, allEnemyUnits);
-		attack(allIdleZerglings, allEnemyUnits);
+				.moveCloseToEnemy(sqaud, allEnemyUnits);
+		attack(sqaud.units, allEnemyUnits);
 	}
 
 	private void attack(Set<Unit> allIdleZerglings, Set<Unit> allEnemyUnits) {
@@ -188,24 +195,88 @@ public class GiveOrders {
 		
 	}
 
+	// send to random area in the map that is walkable
 	public void sendPatrol(Set<Unit> patrolers) {
-		// TODO Auto-generated method stub
-		// send to random area in the map that is walkable
-		
-		
-//		// add to Strategy ===
-					
 		for(Unit u: patrolers)
 		{
-			int[] newPatrolTile = Strategy.instance.getAvailablePatrolTile();
-			
-			ExecuteOrders.instance.patrolTile(u.getID(), newPatrolTile[0], newPatrolTile[1]);
-			//bwapi.patrol(u.getID(), newPatrolTile[0], newPatrolTile[1]);
+			PatrolLocation patrolLocation = getAvailablePatrolTile();
+			if (patrolLocation==null) {
+				System.out.println(String.format("Could not find patrol location for: %s", u));
+				continue;
+			}
+			ExecuteOrders.instance.patrolTile(u.getID(), patrolLocation.x*8, patrolLocation.y*8);
 		}
-				
 	}
 
+	private class PatrolLocation{
+		int x,y;
+		public PatrolLocation(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+		
+		public boolean equals(Object obj) {
+			if (obj instanceof PatrolLocation) {
+				PatrolLocation other = (PatrolLocation)obj;
+				return (other.x == x && other.y == y);
+			}
+			
+			return false;
+		}
+		
+		public String toString() {
+			return String.format("%d:%d", x, y);
+		}
+	}
+	private PatrolLocation getAvailablePatrolTile(){
+		int w = bwapi.getMap().getWidth();
+		int h = bwapi.getMap().getHeight();
+		
+		PatrolLocation patrolLocation = new PatrolLocation(r.nextInt(w), r.nextInt(h));
+		int count = 0;
+		while (!patrolLocations.contains(patrolLocation) && ++count < 500) {
+			patrolLocation = new PatrolLocation(r.nextInt(w), r.nextInt(h));
+			System.out.println(String.format("location %s, was it already seen? %s", patrolLocation, patrolLocations.contains(patrolLocation)));
+			return patrolLocation;
+		}
+		patrolLocations.add(patrolLocation);
+		
+		return null;
 
+		/*
+	// returns an available tile from the map that hasn't been patrolled yet	
+	
+		int randomX, randomY, maxX, maxY, totalTiles = 0;
+		boolean foundTile = false;
+//		totalTiles = 5000*5000;
+		int[] dest = new int[2];
+		for(int i = 0; i<totalTiles+1;)
+		{
+			//randomX = (int) (Perception.instance.mapXmax/2+(Math.random()*50-Math.random()*50));
+			//randomY = (int) (Perception.instance.mapYmax/2+(Math.random()*50-Math.random()*50));
+		
+			randomX = (int) Math.round(Math.random()*10000);
+			randomY = (int) Math.round(Math.random()*10000);
+		
+			if(patrolMap[randomX][randomY]==0)
+			{
+				dest[0]=randomX;
+				dest[1]=randomY;
+				patrolMap[randomX][randomY]=1;
+				return dest;
+			}
+		}
+		
+		
+		//int step=(int) Math.round((Math.random()*3));
+		
+		
+		dest[0]=0;
+		dest[1]=0;
+		return dest;
+		*/
+	}
+	
 	public void returnToBase(Set<Unit> setToReturn)
 	{
 		System.out.println("Returning to base...nothing found");

@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import edu.drexel.cs680.prj1.executeorders.ExecuteOrders;
 import edu.drexel.cs680.prj1.giveorders.GiveOrders;
+import edu.drexel.cs680.prj1.logistics.Logistics;
 import edu.drexel.cs680.prj1.pathfinding.PathFindingUtil;
 import edu.drexel.cs680.prj1.perception.AgentState;
 import edu.drexel.cs680.prj1.perception.Perception;
@@ -38,6 +39,8 @@ public class AIClient implements BWAPIEventListener {
 
 	/** ExecuteOrders Module*/
 	private ExecuteOrders executeOrders;
+	
+	private Logistics logistics;
 
 	/** has drone 5 been morphed */
 	private boolean morphedDrone = false;
@@ -96,6 +99,7 @@ public class AIClient implements BWAPIEventListener {
 		giveOrders = new GiveOrders(bwapi);
 		executeOrders = new ExecuteOrders(bwapi);
 		pathFinding = new PathFindingUtil(bwapi);
+		logistics = new Logistics(bwapi);
 	}
 	
 	/**
