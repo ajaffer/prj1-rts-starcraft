@@ -38,16 +38,16 @@ public class ExecuteOrders {
 				zerglingUnit.getID(), zerglingUnit.getTileX(), zerglingUnit.getTileY()));
 		
 		List<Node> pathToEnemyUnit = null;
-		int count = 0;
+//		int count = 0;
 		
-		while (pathToEnemyUnit == null && count++ < 50) {
+//		while (pathToEnemyUnit == null && count++ < 50) {
 			pathToEnemyUnit = PathFindingUtil.instance.findPath(
 					zerglingUnit.getTileX(), zerglingUnit.getTileY(),
 					enemyUnit.getTileX(), enemyUnit.getTileY());
 			
-			enemyUnit = getRandomUnit(allEnemyUnits);
+//			enemyUnit = getRandomUnit(allEnemyUnits);
 //			zerglingUnit = getRandomUnit(allIdleZerglings);
-		}
+//		}
 
 		if (pathToEnemyUnit == null) {
 			System.out.println("Could not find path!!");

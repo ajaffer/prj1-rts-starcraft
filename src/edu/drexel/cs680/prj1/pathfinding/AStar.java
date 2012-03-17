@@ -53,17 +53,20 @@ public class AStar implements PathFinding {
 				return path;
 			}
 			closed.add(n);
+//			System.out.println(String.format("Closed Node: %s", n));
 //			System.out.println(String.format("closed list size: %d", closed.size()));
 			List<Node> children = getChildren(n);
 //			children.removeAll(closed);
 //			System.out.println(String.format("found %d children", children.size()));
 			for (Node m : children) {
-				if(!closed.contains(m)) { // added check to determine if node closed
+//				if(!closed.contains(m)) { // added check to determine if node closed
 					m.parent = n;
 					m.g = n.g + 1;
 					m.h = heuristic(m);
 					open.add(m);
-				}
+//					System.out.println(String.format("Opened Node: %s, isclosed?%s", m, closed.contains(m)));
+					
+//				}
 			}
 		}
 		
@@ -121,7 +124,7 @@ public class AStar implements PathFinding {
 	
 		for (Direction d : Direction.values()) {
 			Node node = getNode(n, d);
-			if (node!=null) {
+			if (node!=null && !closed.contains(node) && !open.contains(node)) {
 				children.add(node);
 			}
 		}
@@ -129,7 +132,7 @@ public class AStar implements PathFinding {
 		if(children.size()>0) {
 //			System.out.println(String.format("Node %s has %d children", n, children.size()));
 		} else {
-			System.out.println(String.format("Node %s has NO children", n));
+//			System.out.println(String.format("Node %s has NO children", n));
 		}
 		
 		return children;

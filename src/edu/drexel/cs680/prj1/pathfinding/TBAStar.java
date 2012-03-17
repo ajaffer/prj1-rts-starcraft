@@ -63,12 +63,12 @@ public class TBAStar extends AStar {
 //			children.removeAll(closed);
 //			System.out.println(String.format("found %d children", children.size()));
 			for (Node m : children) {
-				if(!closed.contains(m)) { // added check to determine if node closed
+//				if(!closed.contains(m)) { // added check to determine if node closed
 					m.parent = n;
 					m.g = n.g + 1;
 					m.h = heuristic(m);
 					open.add(m);
-				}
+//				}
 			}
 		}
 	}

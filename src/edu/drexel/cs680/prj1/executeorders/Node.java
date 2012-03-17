@@ -1,5 +1,8 @@
 package edu.drexel.cs680.prj1.executeorders;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Node {
 	public int g,h;
 	public int x,y;
@@ -13,9 +16,24 @@ public class Node {
 	public boolean equals(Object o) {
 		if (o instanceof Node) {
 			Node other = (Node)o;
-			return (other.x == x && other.y == y);
+			boolean isEqual = (other.x == x && other.y == y);
+//			if (!isEqual) {
+//				System.out.println(String.format("not equal: %s <==> %s ", this, other));
+//			}
+			return isEqual;
 		}
+		
+		
 		return false;
+	}
+	
+	public int hashCode() {
+		return new HashCodeBuilder().
+				append(g).
+				append(h).
+				append(x).
+				append(y).
+				toHashCode();
 	}
 
 	public String toString() {
