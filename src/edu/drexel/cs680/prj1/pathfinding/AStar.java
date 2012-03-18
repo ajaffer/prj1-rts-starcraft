@@ -21,7 +21,7 @@ public class AStar implements PathFinding {
 	
 	JNIBWAPI bwapi;
 	
-	void init(Node start, Node goal, JNIBWAPI bwapi) {
+	public AStar(Node start, Node goal, JNIBWAPI bwapi) {
 		Comparator<Node> comparator = new Comparator<Node>() {
 			@Override
 			public int compare(Node o1, Node o2) {
@@ -38,12 +38,12 @@ public class AStar implements PathFinding {
 		this.bwapi = bwapi;
 	}
 	
-	public List<Node> calc(Node start, Node goal, JNIBWAPI bwapi) {
-		init(start, goal, bwapi);
+	public List<Node> calc(int ns, int nt) {
 		
 		System.out.println(String.format("Starting AStar, start: %s, goal: %s", start, goal));
 		List<Node> path = null;
-		while (!open.isEmpty()) {
+		int steps = 0;
+		while (!open.isEmpty() && steps++ < ns) {
 //			System.out.println(String.format("open list size: %d", open.size()));
 			Node n = open.remove();
 //			System.out.println(String.format("Removed Node: %s", n));

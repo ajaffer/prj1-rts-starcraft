@@ -7,7 +7,7 @@ import eisbot.proxy.JNIBWAPI;
 
 public interface PathFinding {
 
-	public List<Node> calc(Node start, Node goal, JNIBWAPI bwapi);
+	public List<Node> calc(int ns, int nt);
 	
 }
 
