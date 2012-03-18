@@ -52,7 +52,7 @@ public class ExecuteOrders {
 //		}
 
 		if (pathToEnemyUnit == null) {
-			System.out.println("Could not find path!!");
+			System.out.println("path returned by Path Finding Algo is NULL");
 			return;
 		}
 		

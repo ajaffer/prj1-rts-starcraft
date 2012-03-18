@@ -274,7 +274,7 @@ public class Strategy {
 			return;
 		}
 		
-		if (patrolers.size() >= MIN_PATROLLERS){
+		if (patrolers.size() >= MIN_PATROLLERS && Logistics.instance.noOfSquads() > 0){
 			System.out.println("send patrol");
 			patrolOut=true;
 //			Set<Unit> p = Logistics.instance.idlePatrollers;
@@ -298,7 +298,7 @@ public class Strategy {
 	private void attack() {
 		Set<Unit> enemyUnits = getDiscoveredEnemyUnits();
 		if (enemyUnits != null && !enemyUnits.isEmpty()) {
-			System.out.println(String.format("Attack %d enemies!!", enemyUnits.size()));
+//			System.out.println(String.format("Attack %d enemies!!", enemyUnits.size()));
 			GiveOrders.instance.attackEnemy(enemyUnits, Logistics.instance.getSquad());
 		}
 		

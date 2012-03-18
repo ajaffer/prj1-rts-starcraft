@@ -7,7 +7,7 @@ public class Node {
 	public int g,h;
 	public int x,y;
 	public Node parent;
-	public Node child;
+//	public Node child;
 	
 	public Node(int x, int y) {
 		this.x = x;

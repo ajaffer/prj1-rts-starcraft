@@ -40,7 +40,7 @@ public class AStar implements PathFinding {
 	
 	public List<Node> calc(int ns, int nt) {
 		
-		System.out.println(String.format("Starting AStar, start: %s, goal: %s", start, goal));
+		System.out.println(String.format("A*: Started @%s, goal: %s", start, goal));
 		List<Node> path = null;
 		int steps = 0;
 		while (!open.isEmpty() && steps++ < ns) {
@@ -48,7 +48,7 @@ public class AStar implements PathFinding {
 			Node n = open.remove();
 //			System.out.println(String.format("Removed Node: %s", n));
 			if (n.equals(goal)){
-				System.out.println("Found Goal!");
+				System.out.println("A*: Found Goal!");
 				path = getPath(n);
 				return path;
 			}
@@ -70,7 +70,7 @@ public class AStar implements PathFinding {
 			}
 		}
 		
-		System.out.println("Goal not found!");
+		System.out.println("A*: Goal not found!");
 		
 		return path;
 	}

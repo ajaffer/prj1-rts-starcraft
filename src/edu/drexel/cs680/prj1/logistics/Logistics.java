@@ -17,6 +17,7 @@ public class Logistics {
 	public Set<Unit> idlePatrollers;
 	public Set<Unit> runningPatrollers;
 	
+	private int currentlyAttackingSquad;
 	private List<Squadron> sqauadrons;
 //	private List<Squadron> patrollers;
 	private Squadron currentSqaud;
@@ -43,6 +44,7 @@ public class Logistics {
 		observerdUnits = new HashSet<Unit>();
 		idlePatrollers = new HashSet<Unit>();
 		runningPatrollers = new HashSet<Unit>();
+		currentlyAttackingSquad = 0;
 	}
 	
 	public void addUnits(Set<Unit> units) {
@@ -61,6 +63,10 @@ public class Logistics {
 	
 	public Squadron getSquad(){
 		return sqauadrons.remove(0);
+//		if (currentlyAttackingSquad == sqauadrons.size()) {
+//			currentlyAttackingSquad = 0;
+//		}
+//		return sqauadrons.get(currentlyAttackingSquad++);
 	}
 	
 	public int noOfSquads() {
