@@ -204,7 +204,7 @@ public class GiveOrders {
 				System.out.println(String.format("Could not find patrol location for: %s", u));
 				continue;
 			}
-			ExecuteOrders.instance.patrolTile(u.getID(), patrolLocation.x*8, patrolLocation.y*8);
+			ExecuteOrders.instance.patrolTile(u.getID(), patrolLocation.x, patrolLocation.y);
 		}
 	}
 
@@ -229,13 +229,14 @@ public class GiveOrders {
 		}
 	}
 	private PatrolLocation getAvailablePatrolTile(){
-		int w = bwapi.getMap().getWidth();
-		int h = bwapi.getMap().getHeight();
+		int w = bwapi.getMap().getWalkWidth();
+		int h = bwapi.getMap().getWalkHeight();
 		
-		PatrolLocation patrolLocation = new PatrolLocation(r.nextInt(w), r.nextInt(h));
+//		PatrolLocation patrolLocation = new PatrolLocation(r.nextInt(w), r.nextInt(h));
+		PatrolLocation patrolLocation = new PatrolLocation(r.nextInt(w)*8, r.nextInt(h)*8);
 		int count = 0;
 		while (!patrolLocations.contains(patrolLocation) && ++count < 500) {
-			patrolLocation = new PatrolLocation(r.nextInt(w), r.nextInt(h));
+			patrolLocation = new PatrolLocation(r.nextInt(w)*8, r.nextInt(h)*8);
 			System.out.println(String.format("location %s, was it already seen? %s", patrolLocation, patrolLocations.contains(patrolLocation)));
 			return patrolLocation;
 		}

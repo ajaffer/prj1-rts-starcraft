@@ -14,6 +14,8 @@ public class Logistics {
  */
 	public static Logistics instance;
 	public JNIBWAPI bwapi;
+	public Set<Unit> idlePatrollers;
+	public Set<Unit> runningPatrollers;
 	
 	private List<Squadron> sqauadrons;
 //	private List<Squadron> patrollers;
@@ -39,6 +41,8 @@ public class Logistics {
 //		patrollers = new ArrayList<Squadron>();
 		currentSqaud = new Squadron(new HashSet<Unit>());
 		observerdUnits = new HashSet<Unit>();
+		idlePatrollers = new HashSet<Unit>();
+		runningPatrollers = new HashSet<Unit>();
 	}
 	
 	public void addUnits(Set<Unit> units) {

@@ -164,6 +164,7 @@ public class Strategy {
 	public void apply() {
 //		displayMapWalkable();
 		establishPatrolers();
+//		updatePatrollers();
 		establishAttackers();
 		claimMinerals();
 		patrol();
@@ -234,10 +235,22 @@ public class Strategy {
 			Set<Unit> zerglings = Perception.instance.setOfUnitsByType.get(UnitTypes.Zerg_Zergling.ordinal());
 			if (zerglings!=null && zerglings.size() >= MIN_PATROLLERS) {
 				patrolers.addAll(zerglings);
+				Logistics.instance.idlePatrollers.addAll(patrolers);
 				System.out.println(String.format("patrolers:%d", patrolers.size()));
 			}
 		}		
 	}
+	
+//	private void updatePatrollers() {
+//		System.out.println(String.format("Idle Patrollers: %d", Logistics.instance.idlePatrollers.size()));
+//		System.out.println(String.format("Running Patrollers: %d", Logistics.instance.runningPatrollers.size()));
+//		for (Unit n : Logistics.instance.runningPatrollers) {
+//			if (!n.isPatrolling()){
+//				Logistics.instance.runningPatrollers.remove(n);
+//				Logistics.instance.idlePatrollers.add(n);
+//			}
+//		}
+//	}
 	
 	private void establishAttackers()
 	{
@@ -257,14 +270,18 @@ public class Strategy {
 	
 	private void patrol() {
 		if (patrolOut) {
+//			System.out.println("patrol already out");
 			return;
 		}
 		
 		if (patrolers.size() >= MIN_PATROLLERS){
 			System.out.println("send patrol");
 			patrolOut=true;
+//			Set<Unit> p = Logistics.instance.idlePatrollers;
 			GiveOrders.instance.sendPatrol(patrolers);
-			System.out.println("patrol was sent!!!");
+//			Logistics.instance.idlePatrollers.remove(p);
+//			Logistics.instance.runningPatrollers.addAll(p);
+//			System.out.println("patrol was sent!!!");
 		}
 	}
 	
