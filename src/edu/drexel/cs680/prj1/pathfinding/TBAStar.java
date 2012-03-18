@@ -11,7 +11,6 @@ import eisbot.proxy.JNIBWAPI;
 
 public class TBAStar extends AStar {
 	private Node loc;
-	private List<Node> aStarPath;
 	private Squadron squad;
 	
 	public TBAStar(Node start, Node goal, JNIBWAPI bwapi, Squadron squad) {
@@ -21,8 +20,9 @@ public class TBAStar extends AStar {
 	
 	public List<Node> calc(int ns, int nt) {
 		System.out.println("TBA*: Started");
-		List<Node> currentPath = new ArrayList<Node>();
-		List<Node> newPath = new ArrayList<Node>();
+		List<Node> currentPath = null;
+		List<Node> newPath = null;
+		List<Node> aStarPath = null;
 		
 		loc = start;
 //		newPath.add(start);
@@ -35,10 +35,18 @@ public class TBAStar extends AStar {
 			}
 			if (aStarPath != null){
 				System.out.println(String.format("3.1 A* finished, path size: %d", aStarPath.size()));
-				newPath = aStarPath;
+				newPath = new ArrayList<Node>();
+				newPath.add(start);
+				newPath.addAll(aStarPath);
+				if (!(newPath.contains(start))) {
+					System.out.println(String.format("TBA*, aStarPath does not contain start node %s: ", start));
+				}
+				if (!(newPath.contains(goal))) {
+					System.out.println(String.format("TBA*, aStarPath path does not contain goal node %s: ", goal));
+				}
 			}else {
 				System.out.println(String.format("3.2 TBA*, starting path tracer"));
-				newPath = pathTracer(nt);
+//				newPath = pathTracer(nt);
 			}
 			
 			if (newPath == null && currentPath != null) {
@@ -73,7 +81,7 @@ public class TBAStar extends AStar {
 			tempPath.add(n);
 			n = n.parent;
 		}
-//		Collections.reverse(t);
+		Collections.reverse(tempPath);
 		
 //		if (!(Collections.disjoint(newPath, t))){
 //			newPath.addAll(t);
@@ -98,7 +106,6 @@ public class TBAStar extends AStar {
 				System.out.println(String.format("1.B Incorrect State, Root node: %s is not the Start node: %s", root, start));
 			}
 			List<Node> newPath = tempPath;
-			Collections.reverse(newPath);
 			tempPath = new ArrayList<Node>();
 			System.out.println(String.format("2. PathTracer finished, size: %d", newPath.size()));
 			return newPath;

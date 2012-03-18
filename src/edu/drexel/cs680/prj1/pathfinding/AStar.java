@@ -50,6 +50,12 @@ public class AStar implements PathFinding {
 			if (n.equals(goal)){
 				System.out.println("A*: Found Goal!");
 				path = getPath(n);
+				if (!(path.contains(start))){
+					System.out.println(String.format("A* path does not contain start node: %s", start));
+				}
+				if (!(path.contains(goal))){
+					System.out.println(String.format("A* path does not contain goal node: %s", goal));
+				}
 				return path;
 			}
 			closed.add(n);
