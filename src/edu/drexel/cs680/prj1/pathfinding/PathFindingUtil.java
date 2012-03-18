@@ -26,7 +26,7 @@ public class PathFindingUtil {
 		if (path == null) {
 			System.err.println("Path is null!!");
 		} else {
-			System.out.println(String.format("algo:%s path has %d steps", ALGO.ASTAR, path.size()));
+			System.out.println(String.format("algo:%s path has %d steps", ALGO.TBASTAR, path.size()));
 		}
 		
 		return path;
@@ -46,7 +46,7 @@ public class PathFindingUtil {
 
 		case TBASTAR:
 			PathFinding tbaStar = new TBAStar(start, goal, bwapi, squad);
-			path = tbaStar.calc(3, 3);
+			path = tbaStar.calc(100, 100);
 			break;
 			
 		default:
