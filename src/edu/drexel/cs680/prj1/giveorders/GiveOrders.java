@@ -204,21 +204,44 @@ public class GiveOrders {
 	
 	// send to random area in the map that is walkable
 	public void sendPatrol(Set<Unit> patrolers) {
-		boolean kamazeeSent = false;
+		List <PatrolLocation> corners = getCorners();
+		
 		for(Unit u: patrolers)
 		{
-			if (!kamazeeSent) {
-				sendKamakaze(u);
-				kamazeeSent = true;
-				continue;
+			PatrolLocation patrolLocation;
+			
+			if (corners.isEmpty()) {
+				patrolLocation = getAvailablePatrolTile();
+				if (patrolLocation==null) {
+					System.out.println(String.format("Could not find patrol location for: %s", u));
+					continue;
+				}
+			} else {
+				patrolLocation = corners.remove(0);
 			}
-			PatrolLocation patrolLocation = getAvailablePatrolTile();
-			if (patrolLocation==null) {
-				System.out.println(String.format("Could not find patrol location for: %s", u));
-				continue;
-			}
+			
 			ExecuteOrders.instance.patrolTile(u.getID(), patrolLocation.x, patrolLocation.y);
 		}
+	}
+
+	private List<PatrolLocation> getCorners() {
+		List<PatrolLocation> corners = new ArrayList<PatrolLocation>();
+		int w = bwapi.getMap().getWalkWidth();
+		int h = bwapi.getMap().getWalkHeight();
+
+		int x = 0, y = 0;
+		corners.add(new PatrolLocation(x*8, y*8));
+		
+		x = w; y = 0;
+		corners.add(new PatrolLocation(x*8, y*8));
+		
+		x = w; y = h;
+		corners.add(new PatrolLocation(x*8, y*8));
+		
+		x = 0; y = h;
+		corners.add(new PatrolLocation(x*8, y*8));
+		
+		return corners;
 	}
 
 	private class PatrolLocation{

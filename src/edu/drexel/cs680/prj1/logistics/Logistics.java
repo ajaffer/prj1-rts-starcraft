@@ -25,7 +25,7 @@ public class Logistics {
 //	enum SqaudType {PATROL, ATTACK};
 	
 	public class Squadron {
-		public static final int MIN_SIZE = 2;
+		public static final int MIN_SIZE = 3;
 		public Set<Unit> units;
 //		public SqaudType sqaudType;
 		

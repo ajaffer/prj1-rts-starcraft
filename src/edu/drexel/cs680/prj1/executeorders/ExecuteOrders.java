@@ -46,7 +46,7 @@ public class ExecuteOrders {
 		try {
 			pathToEnemyUnit = PathFindingUtil.instance.findPath(
 					zerglingUnit.getTileX(), zerglingUnit.getTileY(),
-					enemyUnit.getTileX(), enemyUnit.getTileY(), PathFindingUtil.ALGO.TBASTAR, squad);
+					enemyUnit.getTileX(), enemyUnit.getTileY(), PathFindingUtil.ALGO.LRTASTAR, squad);
 		} catch (IllegalStateException e) {
 			System.out.println("Path wasn't found.");
 		}
