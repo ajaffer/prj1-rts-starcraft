@@ -138,28 +138,28 @@ public class Strategy {
 	
 	private Random r = new Random();
 	
-	private void astarTest(){
-		Set<Unit> drones = Perception.instance.setOfIdleUnitsByType.get(UnitTypes.Zerg_Drone.ordinal());
-		if (drones!=null) {
-			Unit drone = drones.toArray(new Unit[0])[r.nextInt(drones.size())];
-//			Unit drone2 = drones.toArray(new Unit[0])[2];
-			List<Unit> enemies = bwapi.getEnemyUnits();
-			if (enemies!=null && !enemies.isEmpty()) {
-				Unit enemy = enemies.get(r.nextInt(enemies.size()));
-//				List<Node> path = PathFindingUtil.instance.findPath(drone.getTileX(), drone.getTileY(), enemy.getTileX(), enemy.getTileY());
-				List<Node> path = PathFindingUtil.instance.findPath(drone.getTileX(), drone.getTileY(), 101, 17);
-				
-				if (path!=null) {
-					System.out.println("Ging to look for enemy type " + enemy.getTypeID());
-					for (Node moveTo : path) {			
-						System.out.println(String.format("moving to %d,%d", moveTo.x, moveTo.y));
-						bwapi.move(drone.getID(), (int) moveTo.x,
-								(int) moveTo.y);
-					}
-				}
-			}
-		}
-	}
+//	private void astarTest(){
+//		Set<Unit> drones = Perception.instance.setOfIdleUnitsByType.get(UnitTypes.Zerg_Drone.ordinal());
+//		if (drones!=null) {
+//			Unit drone = drones.toArray(new Unit[0])[r.nextInt(drones.size())];
+////			Unit drone2 = drones.toArray(new Unit[0])[2];
+//			List<Unit> enemies = bwapi.getEnemyUnits();
+//			if (enemies!=null && !enemies.isEmpty()) {
+//				Unit enemy = enemies.get(r.nextInt(enemies.size()));
+////				List<Node> path = PathFindingUtil.instance.findPath(drone.getTileX(), drone.getTileY(), enemy.getTileX(), enemy.getTileY());
+//				List<Node> path = PathFindingUtil.instance.findPath(drone.getTileX(), drone.getTileY(), 101, 17);
+//				
+//				if (path!=null) {
+//					System.out.println("Ging to look for enemy type " + enemy.getTypeID());
+//					for (Node moveTo : path) {			
+//						System.out.println(String.format("moving to %d,%d", moveTo.x, moveTo.y));
+//						bwapi.move(drone.getID(), (int) moveTo.x,
+//								(int) moveTo.y);
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 	public void apply() {
 //		displayMapWalkable();

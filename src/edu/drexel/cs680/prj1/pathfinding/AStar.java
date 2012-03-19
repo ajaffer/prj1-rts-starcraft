@@ -75,8 +75,10 @@ public class AStar implements PathFinding {
 //				}
 			}
 		}
-		
-		System.out.println("A*: Goal not found!");
+		if (path == null && open.isEmpty()){
+			System.out.println("A*: Goal not found!");
+			throw new IllegalStateException("A*: Goal not found!");
+		}
 		
 		return path;
 	}

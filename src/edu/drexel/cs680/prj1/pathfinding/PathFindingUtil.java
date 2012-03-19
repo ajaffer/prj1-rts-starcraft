@@ -21,17 +21,18 @@ public class PathFindingUtil {
 		this.bwapi = bwapi;
 	}
 
-	public List<Node> findPath(int xStart, int yStart, int xGoal,
-			int yGoal) {
-		List<Node> path = findPath(xStart, yStart, xGoal, yGoal, ALGO.ASTAR, null);
-		if (path == null) {
-			System.err.println("Path is null!!");
-		} else {
-			System.out.println(String.format("algo:%s path has %d steps", ALGO.TBASTAR, path.size()));
-		}
-		
-		return path;
-	}
+//	public List<Node> findPath(int xStart, int yStart, int xGoal,
+//			int yGoal) {
+//		ALGO a = ALGO.TBASTAR;
+//		List<Node> path = findPath(xStart, yStart, xGoal, yGoal, a, null);
+//		if (path == null) {
+//			System.err.println("Path is null!!");
+//		} else {
+//			System.out.println(String.format("algo:%s path has %d steps", a, path.size()));
+//		}
+//		
+//		return path;
+//	}
 
 	public List<Node> findPath(int xStart, int yStart, int xGoal,
 			int yGoal, ALGO algo, Squadron squad) {

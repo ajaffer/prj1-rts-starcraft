@@ -30,7 +30,14 @@ public class TBAStar extends AStar {
 			System.out.println(String.format("1. TBA* @: %s", loc));
 			
 			if (aStarPath == null){
-				aStarPath = super.calc(ns, nt);
+//				aStarPath = super.calc(ns, nt);
+				try {
+					aStarPath = super.calc(ns, nt);
+				} catch (IllegalStateException e) {
+					System.out.println("No Path Found!!");
+//					e.printStackTrace();
+					return null;
+				}
 				System.out.println(String.format("2. A* %d steps finished", ns));
 			}
 			if (aStarPath != null){
@@ -46,7 +53,7 @@ public class TBAStar extends AStar {
 				}
 			}else {
 				System.out.println(String.format("3.2 TBA*, starting path tracer"));
-//				newPath = pathTracer(nt);
+				newPath = pathTracer(nt);
 			}
 			
 			if (newPath == null && currentPath != null) {

@@ -43,9 +43,13 @@ public class ExecuteOrders {
 //		int count = 0;
 		
 //		while (pathToEnemyUnit == null && count++ < 50) {
+		try {
 			pathToEnemyUnit = PathFindingUtil.instance.findPath(
 					zerglingUnit.getTileX(), zerglingUnit.getTileY(),
-					enemyUnit.getTileX(), enemyUnit.getTileY(), PathFindingUtil.ALGO.LRTASTAR, squad);
+					enemyUnit.getTileX(), enemyUnit.getTileY(), PathFindingUtil.ALGO.TBASTAR, squad);
+		} catch (IllegalStateException e) {
+			System.out.println("Path wasn't found.");
+		}
 			
 //			enemyUnit = getRandomUnit(allEnemyUnits);
 //			zerglingUnit = getRandomUnit(allIdleZerglings);
