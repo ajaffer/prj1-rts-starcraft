@@ -12,7 +12,8 @@ public class PathFindingUtil {
 
 	public enum ALGO {
 		ASTAR,
-		TBASTAR
+		TBASTAR,
+		LRTASTAR
 	}
 
 	public PathFindingUtil(JNIBWAPI bwapi) {
@@ -47,6 +48,11 @@ public class PathFindingUtil {
 		case TBASTAR:
 			PathFinding tbaStar = new TBAStar(start, goal, bwapi, squad);
 			path = tbaStar.calc(100, 100);
+			break;
+			
+		case LRTASTAR:
+			LRTAStar lrtaStar = new LRTAStar(start, goal, bwapi);
+			path = lrtaStar.calc(-1, -1);
 			break;
 			
 		default:

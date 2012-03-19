@@ -45,7 +45,7 @@ public class ExecuteOrders {
 //		while (pathToEnemyUnit == null && count++ < 50) {
 			pathToEnemyUnit = PathFindingUtil.instance.findPath(
 					zerglingUnit.getTileX(), zerglingUnit.getTileY(),
-					enemyUnit.getTileX(), enemyUnit.getTileY(), PathFindingUtil.ALGO.ASTAR, squad);
+					enemyUnit.getTileX(), enemyUnit.getTileY(), PathFindingUtil.ALGO.LRTASTAR, squad);
 			
 //			enemyUnit = getRandomUnit(allEnemyUnits);
 //			zerglingUnit = getRandomUnit(allIdleZerglings);
