@@ -195,10 +195,23 @@ public class GiveOrders {
 		
 	}
 
+	public void sendKamakaze(Unit k) {
+		PatrolLocation patrolLocation = getKamakazeTile(k);
+		ExecuteOrders.instance.patrolTile(k.getID(), patrolLocation.x, patrolLocation.y);
+
+		System.out.println(String.format("Kamakazee sent to: %s", patrolLocation));
+	}
+	
 	// send to random area in the map that is walkable
 	public void sendPatrol(Set<Unit> patrolers) {
+		boolean kamazeeSent = false;
 		for(Unit u: patrolers)
 		{
+			if (!kamazeeSent) {
+				sendKamakaze(u);
+				kamazeeSent = true;
+				continue;
+			}
 			PatrolLocation patrolLocation = getAvailablePatrolTile();
 			if (patrolLocation==null) {
 				System.out.println(String.format("Could not find patrol location for: %s", u));
@@ -228,6 +241,18 @@ public class GiveOrders {
 			return String.format("%d:%d", x, y);
 		}
 	}
+	
+	private PatrolLocation getKamakazeTile(Unit k) {
+		int w = bwapi.getMap().getWalkWidth();
+		int h = bwapi.getMap().getWalkHeight();
+		
+		int x = (int)((1 - (float)(k.getTileX()/w)) * w) * 8;
+		int y = (int)((1 - (float)(k.getTileY()/h)) * h) * 8;
+		
+		PatrolLocation patrolLocation = new PatrolLocation(x, y);
+		return patrolLocation;
+	}
+	
 	private PatrolLocation getAvailablePatrolTile(){
 		int w = bwapi.getMap().getWalkWidth();
 		int h = bwapi.getMap().getWalkHeight();
